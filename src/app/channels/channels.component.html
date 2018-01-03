@@ -1,0 +1,19 @@
+<div class="channels">
+	<a class="channel" 
+		*ngFor="let channel of channels" 
+		routerLink="/channel/{{channel.id}}"
+		[class.selected]="isSelected(channel)"
+		(click)="onSelect(channel)">
+		<div>
+			<img class="icon" src="{{ channel.iconUrl }}">
+		</div>
+		<div class="info">
+			<p class="title">{{ channel.title }}</p>
+			<div>
+				<span *ngIf="channel.newVideosCount" class="newVideosCount newVideosFrame" title="{{ channel.newVideosCount > 0 ? 'Channel has ' + channel.newVideosCount + ' new videos' : 'Channel doesn\'t have new videos' }}">{{ channel.newVideosCount }}</span>
+				<span *ngIf="channel.isNoted()" class="isNoted noteFrame" title="You have written note for this channel">📝</span>
+				<span *ngIf="channel.isTagged()" class="isTagged tagFrame" title="You have added some tags for this channel">✔</span>
+			</div>
+		</div>
+	</a>
+</div>

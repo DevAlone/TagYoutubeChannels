@@ -1,0 +1,40 @@
+{
+    "manifest_version": 2,
+    "name": "TagYoutubeChannels",
+    "version": "1.0",
+    
+    "applications": {
+        "gecko": {
+            "id": "TagYoutubeChannels@d3d.info"
+        }
+    },
+    
+    "permissions": ["storage"],
+    "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'",
+
+    "description": "Organize your subscriptions using tags like 'sport', 'travel', 'cooking'. It's very useful, try it out!",
+
+    "icons": {
+        "48": "assets/icons/icon_48.png"
+    },
+
+    "content_scripts": [
+        {
+            "matches": ["*://*.youtube.com/*"],
+            "js": ["assets/js/parser.js"]
+        }
+    ],
+    
+    "background": {
+        "scripts": ["assets/js/background.js"]
+    },
+
+    "browser_action": {
+        "browser_style": true
+    },
+    
+    "options_ui": {
+        "page": "pages/main.html",
+        "browser_style": true
+    }
+}

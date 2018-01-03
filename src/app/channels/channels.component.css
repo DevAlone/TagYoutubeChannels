@@ -1,0 +1,74 @@
+.channels {
+	overflow-y: scroll;
+	height: 100vh;
+}
+
+.channels .selected {
+	/*background: red;*/
+	background: #e5e5e5;
+}
+
+.channel {
+	display: flex;
+	flex-direction: row;
+	flex-wrap: nowrap;
+	justify-content: flex-start;
+	align-items: stretch;
+	align-content: center;
+
+	min-height: 50px;
+	text-decoration: none;
+	color: inherit;
+
+	padding: 10px 5px;
+	border-bottom: 1px solid #ddd;
+}
+
+.channel:hover {
+	background: #cecece !important;
+}
+
+.channel > * {
+	/*padding: 0 5px 0 0;*/
+	display: flex;
+	flex-direction: row;
+	flex-wrap: nowrap;
+	justify-content: center;
+	align-items: center;
+	align-content: center;
+}
+
+.channel .info {
+	flex-grow: 1;
+
+	display: flex;
+	flex-direction: column;
+	flex-wrap: nowrap;
+	justify-content: space-between;
+	align-items: stretch;
+	align-content: center;
+
+	/*padding: 10px;*/
+	padding-left: 10px;
+}
+
+.title {
+	margin: 0 0 5px 0;
+	/*width: 100%;*/
+	word-wrap: break-word;
+	/*background: red;*/
+}
+
+.icon {
+	height: 50px;
+}
+
+.isTagged {
+	display: inline-block;
+	padding: 2px 5px !important;
+	border-radius: 5px;
+}
+
+.newVideosCount {
+	
+}

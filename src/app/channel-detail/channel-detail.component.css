@@ -1,0 +1,137 @@
+.channel {
+	/*background: red;*/
+	margin: 10px;
+	padding: 10px;
+	border-radius: 5px;
+	box-sizing: border-box;
+}
+
+.header {
+	display: flex;
+	flex-direction: row;
+	flex-wrap: nowrap;
+	justify-content: flex-start;
+	align-items: center;
+	align-content: center;
+
+	border-bottom: 1px solid #aeaeae;
+	padding: 0 0 10px 0;
+}
+
+.header > * {
+	
+}
+
+.header .wrapper {
+	flex-grow: 1;
+	display: flex;
+	flex-direction: column;
+	flex-wrap: nowrap;
+	justify-content: center;
+	align-items: flex-start;
+	align-content: center;
+
+	padding: 10px;
+}
+
+.header .wrapper > * {
+	margin: 2px 0;
+}
+
+.newVideosCount {
+	padding: 2px 5px !important;
+}
+
+.title h3 {
+	padding: 0;
+	margin: 0;
+}
+
+.header p {
+	padding: 0;
+	margin: 0;
+}
+
+.header .wrapper > p {
+
+}
+
+.icon {
+	/*width: 100px;*/
+	/*height: 100%;*/
+	width: auto;
+}
+
+.watchOnYoutubeButton {
+	/*width: 10px;
+	height: 10px;*/
+	height: 100%;
+}
+
+.watchOnYoutubeButton img {
+	/*width: 16px;
+	height: 16px;*/
+	height: 100%;
+	padding-left: 5px;
+}
+
+.note { 
+	width: 100%;
+	margin: 10px 0;
+	box-sizing: border-box;
+}
+
+.note textarea {
+	width: 100%;
+	box-sizing: border-box;
+	background: #fffbc1;
+	padding: 10px;
+}
+
+.tags {
+	width: 100%;
+	box-sizing: border-box;
+}
+
+.dropZone {
+	box-sizing: border-box;
+	width: 100%;
+	background: #efefef;
+	padding: 10px;
+	min-height: 250px;
+}
+
+.dropZoneHeader {
+	display: flex;
+	flex-direction: row;
+	flex-wrap: wrap;
+	justify-content: space-between;
+	align-items: center;
+	align-content: center;
+}
+
+.tag {
+	display: inline-block;
+	/*background: #3ab3ff;*/
+	/*border: 1px solid #009cff;*/
+	margin: 5px;
+	border-radius: 5px;
+	color: #fff;
+}
+.tag .name {
+	display: inline-block;
+	margin: 0;
+	margin: 5px 10px;
+}
+
+.tag .deleteButton {
+	background: none;
+	/*border: 1px solid #009cff;*/
+	border: none;
+	color: #eee;
+	height: 100%;
+}
+
+.tag .deleteButton:hover {
+	color: #f00;
+}

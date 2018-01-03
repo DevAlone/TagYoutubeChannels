@@ -1,0 +1,12 @@
+<div class="tagsComponent">
+	<div class="createTagForm">
+		<input type="text" id="createTagForm_tagName" (keyup)="$event.keyCode == 13 && createTag()">
+		<button id="createTagForm_createButton" (click)="createTag()">+</button>
+	</div>
+
+	<div class="tags">
+		<div class="tag tagFrameHover" *ngFor="let tag of tags" draggable="true" (dragstart)="onDrag($event, tag)">
+			{{ tag.name }}
+		</div>
+	</div>
+</div>

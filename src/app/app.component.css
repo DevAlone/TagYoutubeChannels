@@ -1,0 +1,33 @@
+#leftColumn,
+#contentColumn, 
+#rightColumn {
+	position: fixed;
+	top: 0;
+	height: 100vh;
+}
+
+#leftColumn {
+	left: 0;
+	width: 25%;
+}
+#contentColumn {
+	left: 25%;
+	width: 50%;
+	border-left: 1px solid #aeaeae;
+	border-right: 1px solid #aeaeae;
+}
+#rightColumn {
+	left: 75%;
+	width: 25%;
+}
+
+#leftColumn > * {
+	height: 100%;
+}
+
+#messageBox {
+	position: fixed;
+	left: 25%;
+	bottom: 0;
+	right: 25%;
+}

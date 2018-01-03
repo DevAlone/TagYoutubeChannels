@@ -1,0 +1,42 @@
+.tagsComponent {
+	height: 100vh;
+}
+.createTagForm {
+	height: 5vh;
+
+	display: flex;
+	flex-direction: row;
+	flex-wrap: nowrap;
+	justify-content: space-around;
+	align-items: center;
+	align-content: center;
+}
+.createTagForm > * {
+}
+.createTagForm > input {
+	/*flex-grow: 1;*/
+	width: 50%;
+}
+.createTagForm > button {
+	width: 25%;
+}
+.tags {
+	overflow-y: scroll;
+	height: 95vh;
+}
+
+.tag {
+	min-height: 50px;
+	display: flex;
+	flex-direction: row;
+	flex-wrap: nowrap;
+	justify-content: flex-start;
+	align-items: center;
+	align-content: center;
+	cursor: pointer;
+	padding: 10px;
+}
+
+.tag:hover {
+	
+}
