@@ -10,6 +10,7 @@ declare var Arrays: any;
 @Injectable()
 export class ChannelService {
   private channels: { [key:string]:Channel; } = {};
+  private isInitialized: boolean = false;
   // selectedChannel: Channel;
 
   constructor(private tagService: TagService) { 
@@ -31,11 +32,15 @@ export class ChannelService {
   getChannelById(channelId: string): Promise<Channel> {
     var self = this;
     return new Promise(function(resolve, reject) {
-      self.loadFromStorage().then(function() {
-        resolve(self.channels[channelId])
-      }, function(error) {
-        reject(error);
-      });
+      if (!self.isInitialized) {
+        self.loadFromStorage().then(function() {
+          resolve(self.channels[channelId]);
+        }, function(error) {
+          reject(error);
+        });
+      } else {
+        resolve(self.channels[channelId]);
+      }
     }); 
   }
 
@@ -111,6 +116,7 @@ export class ChannelService {
             self.channels[relation.channelId].tags.add(tag);
           }
           resolve();
+          self.isInitialized = true;
         }, error => {
           reject(error);
         });
