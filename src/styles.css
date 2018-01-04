@@ -9,7 +9,12 @@ html, body {
 }
 
 p {
-	font-size: 16px;
+	font-size: 15px;
+	padding: 0;
+	margin: 0;
+	overflow-wrap: break-word;
+	word-wrap: break-word;
+	word-break: break-word;
 }
 .tagFrame,
 .noteFrame,
@@ -35,9 +40,38 @@ p {
 
 .blocksFrame {
 	border: 1px solid #aeaeae;
+	border-radius: 5px;
 }
 
 .noteFrame {
 	background: #ffde75;
 	border: solid 1px #fcd453;
+}
+
+.dropZone {
+	box-sizing: border-box;
+	width: 100%;
+	background: #efefef;
+	padding: 10px;
+	min-height: 250px;
+}
+
+.dropZoneHeader {
+	display: flex;
+	flex-direction: row;
+	flex-wrap: wrap;
+	justify-content: space-between;
+	align-items: center;
+	align-content: center;
+}
+
+.channelFrame {
+	background: #fff;
+	border: 1px solid #aeaeae;
+	/*padding: 5px;*/
+	margin: 10px;
+}
+
+.channelFrameHover {
+
 }

@@ -1,0 +1,8 @@
+<div class="tags">
+	<div class="tag tagFrame tagFrameHover" *ngFor="let tag of channel.tags" title="{{ tag.id }}">
+		<div>
+			<div class="name">{{ tag.name }}</div>
+			<button (click)="deleteTag(tag)" class="deleteButton" title="delete tag">X</button>
+		</div>
+	</div>
+</div>

@@ -21,4 +21,8 @@ export class Channel {
 	isNoted(): boolean {
 		return this.note.length > 0;
 	}
+
+	get hasNewVideos(): boolean {
+		return this.newVideosCount > 0;
+	}
 }

@@ -1,3 +1,5 @@
+"use strict";
+
 import { Injectable } from '@angular/core';
 import { Channel } from './channel';
 import { Tag } from './tag';
@@ -9,120 +11,79 @@ declare var Arrays: any;
 
 @Injectable()
 export class ChannelService {
-  private channels: { [key:string]:Channel; } = {};
-  private isInitialized: boolean = false;
-  // selectedChannel: Channel;
+    // private channelsCache: { [key:string]:Channel; } = {};
+    private channelList: Channel[] = [];
+    private isInitialized: boolean = false;
 
-  constructor(private tagService: TagService) { 
-    // this.getFromStorage();
-    // this.loadFakeData();
-    this.loadFromStorage();
-  }
-
-  getChannels(): Channel[] {
-    var result: Channel[] = [];
-    for (var channelId in this.channels) {
-      var channel = this.channels[channelId];
-      result.push(channel);
+    constructor(
+        private tagService: TagService
+    ) { 
+        this.loadFromStorage();
     }
 
-    return result;
-  }
+    getChannels(): Channel[] {
+        return this.channelList;
+    }
 
-  getChannelById(channelId: string): Promise<Channel> {
-    var self = this;
-    return new Promise(function(resolve, reject) {
-      if (!self.isInitialized) {
-        self.loadFromStorage().then(function() {
-          resolve(self.channels[channelId]);
-        }, function(error) {
-          reject(error);
+    getChannelById(channelId: string): Promise<Channel> {
+        var self = this;
+        return new Promise<Channel>((resolve, reject) => {
+            function waiter() {
+                if (self.isInitialized)
+                    resolve(self.channelList.find(channel => channel.id === channelId));
+                else
+                    setTimeout(waiter, 100);
+            }
+            waiter();
         });
-      } else {
-        resolve(self.channels[channelId]);
-      }
-    }); 
-  }
-
-  saveChannel(channel: Channel): void {
-    this.channels[channel.id] = channel;
-    
-    var storedChannels = {};
-
-    for (var channelId in this.channels) {
-      var c = this.channels[channelId];
-      storedChannels[channelId] = {
-        title: c.title,
-        iconUrl: c.iconUrl,
-        newVideosCount: c.newVideosCount,
-        inSubscriptions: c.inSubscriptions,
-        note: c.note,
-      }
     }
 
-    browser.storage.sync.set({
-      channels: storedChannels
-    });
+    saveChannel(channel: Channel): void {
+        var storedChannels = {};
 
-    var relations = [];
-
-    for (var channelId in this.channels) {
-      var ch = this.channels[channelId];
-      // console.log(ch);
-      // console.log(ch.tags);
-      for (var tag of Array.from(ch.tags.values())) {
-        relations.push({
-          tagId: tag.id,
-          channelId: channelId
-        })
-      }
-    }
-
-    browser.storage.sync.set({
-      channel_tag_relations: relations
-    });
-  }
-
-  loadFromStorage(): Promise<void> {
-    var self = this;
-
-    return new Promise(function (resolve, reject) {
-      browser.storage.sync.get("channels").then(item => {
-        for (var member in self.channels) 
-          delete self.channels[member];
-
-        for (var channelId in item.channels) {
-          var channel = item.channels[channelId];
-
-          self.channels[channelId] = new Channel({
-            id: channelId,
-            title: channel.title,
-            iconUrl: channel.iconUrl,
-            newVideosCount: channel.newVideosCount,
-            inSubscriptions: channel.inSubscriptions,
-            note: channel.note
-          });
+        for (var c of this.channelList) {
+            storedChannels[c.id] = {
+                title: c.title,
+                iconUrl: c.iconUrl,
+                newVideosCount: c.newVideosCount,
+                inSubscriptions: c.inSubscriptions,
+                note: c.note,
+            }
         }
 
-        // observer.complete();
-        
-
-        browser.storage.sync.get("channel_tag_relations").then(item => {
-          if (item.channel_tag_relations === undefined)
-            return;
-          
-          for (var relation of item.channel_tag_relations) {
-            var tag = self.tagService.getTagById(relation.tagId);
-            self.channels[relation.channelId].tags.add(tag);
-          }
-          resolve();
-          self.isInitialized = true;
-        }, error => {
-          reject(error);
+        browser.storage.sync.set({
+            channels: storedChannels
         });
-      }, error => {
-        reject(error);
-      });
-    });
-  }
+    }
+
+    loadFromStorage(): Promise<void> {
+        var self = this;
+
+        return new Promise(function (resolve, reject) {
+            browser.storage.sync.get("channels").then(item => {
+                // for (var member in self.channels) 
+                //     delete self.channels[member];
+                self.channelList.splice(0, self.channelList.length);
+
+                for (var channelId in item.channels) {
+                    var channel = item.channels[channelId];
+
+                    self.channelList.push(new Channel({
+                        id: channelId,
+                        title: channel.title,
+                        iconUrl: channel.iconUrl,
+                        newVideosCount: channel.newVideosCount,
+                        inSubscriptions: channel.inSubscriptions,
+                        note: channel.note
+                    }));
+                }
+
+                self.isInitialized = true;
+
+                resolve();
+            }, error => {
+                reject(error);
+            });
+        });
+    }
 }

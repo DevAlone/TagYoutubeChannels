@@ -6,6 +6,7 @@ import { Channel } from '../channel';
 import { ChannelService } from '../channel.service';
 import { TagService } from '../tag.service';
 import { MessageService } from '../message.service';
+import { ChannelTagRelationService } from '../channel-tag-relation.service';
 
 
 @Component({
@@ -22,7 +23,8 @@ export class ChannelDetailComponent implements OnInit {
     	private channelService: ChannelService,
     	private location: Location,
     	public tagService: TagService,
-    	private messageService: MessageService
+    	private messageService: MessageService,
+    	private channelTagService: ChannelTagRelationService
 	) { }
 
 	ngOnInit() {
@@ -43,12 +45,6 @@ export class ChannelDetailComponent implements OnInit {
 		this.sub.unsubscribe();
 	}
 
-	// updateChannel(): void {
-	// 	const id = this.route.snapshot.paramMap.get('id');
-	// 	this.channelService.getChannel(id)
-	// 	 	.subscribe(channel => this.channel = channel);
-	// }
-
 	dropTag(event): void {
 		event.preventDefault();
 		var tagId = event.dataTransfer.getData("tagId");
@@ -59,25 +55,24 @@ export class ChannelDetailComponent implements OnInit {
 			return;
 		}
 		
-		var tag = this.tagService.getTagById(tagId);
-		
-		if (this.channel.tags.has(tag)) {
-			this.messageService.addMessage("Channel already has this tag");
-			return;
-		}
+		var self = this;
 
-		this.channel.tags.add(tag);
-		
-		this.save();
+		this.tagService.getTagById(tagId).then(tag => {
+			if (self.channel.tags.has(tag)) {
+				self.messageService.addMessage("Channel already has this tag");
+				return;
+			}
+
+			self.channelTagService.addTagToChannel(self.channel, tag);
+		}, error => {
+			console.log(error);
+			return;
+		});
 	}
 
+
 	deleteTag(tag: Tag): void {
-		tag.channels.delete(this.channel);
-		this.channel.tags.delete(tag);
-		
-		// this.save();
-		this.channelService.saveChannel(this.channel);
-		this.tagService.saveTag(tag);
+		this.channelTagService.deleteTagFromChannel(this.channel, tag);
 	}
 
 	noteChanged(): void {
@@ -88,14 +83,9 @@ export class ChannelDetailComponent implements OnInit {
 		if(!confirm("Are you sure? It will remove all tags from channel \"" + this.channel.title + "\"")) 
 			return;
 
-		for (var tag of Array.from(this.channel.tags.values())) {
-			this.deleteTag(tag);
-		}
-
-		// this.channel.tags.clear();
-		// TODO: implement it
-		this.save();
-		this.messageService.addMessage("Tags were successfully removed");
+		this.channelTagService.clearTagsFromChannel(this.channel).then(() => {
+			this.messageService.addMessage("Tags were successfully removed");	
+		});
 	}
 
 	save(): void {

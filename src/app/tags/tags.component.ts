@@ -5,6 +5,7 @@ import { MessageService } from '../message.service';
 
 
 declare var createTagForm_tagName: any;
+declare var tagList: any;
 
 
 @Component({
@@ -13,7 +14,6 @@ declare var createTagForm_tagName: any;
   styleUrls: ['./tags.component.css'],
 })
 export class TagsComponent implements OnInit {
-  // tags: Tag[] = [];
   get tags(): Tag[] {
     return this.tagService.getTags();
   }
@@ -28,28 +28,38 @@ export class TagsComponent implements OnInit {
   }
 
   createTag(): void {
-   //  var self = this;
-  	// var tagName = createTagForm_tagName.value;
-  	// if (typeof tagName !== 'string' || tagName.length === 0) {
-  	// 	// alert("Tag cannot be empty!");
-   //    this.messageService.addMessage("Tag cannot be empty!");
-  	// 	return;
-  	// }
+    var self = this;
+  	var tagName = createTagForm_tagName.value;
+  	if (typeof tagName !== 'string' || tagName.length === 0) {
+      this.messageService.addMessage("Tag cannot be empty!");
+  		return;
+  	}
   	
-  	// this.tagService.addTag(tagName).subscribe(function() {
-   //    createTagForm_tagName.value = "";
-   //    self.messageService.addMessage("Tag was added succesfully!");
-   //  }, function(error) {
-   //    self.messageService.addMessage(error);
-   //  })
+  	this.tagService.addTag(tagName).then(function() {
+      createTagForm_tagName.value = "";
+      tagList.scrollTop = tagList.scrollHeight;
+      self.messageService.addMessage("Tag was added succesfully!");
+    }, function(error) {
+      if (typeof error === "string")
+        self.messageService.addMessage(error);
+      else {
+        self.messageService.addMessage(error.message);
+        self.scrollToTag(error.tag);
+      }
+    })
   }
-
-  // updateTags(): void {
-  //   this.tagService.getTags().subscribe(tags => this.tags = tags);  
-  // }
 
   onDrag(event, tag): void {
     event.dataTransfer.setData("tagId", tag.id);
+  }
+
+  scrollToTag(tag: Tag): void {
+    for (var tagElement of tagList.children) {
+      if (tagElement.getAttribute("tag-id") == tag.id) {
+        tagList.scrollTop = tagElement.offsetTop - tagElement.offsetHeight;
+        return;
+      }
+    }
   }
 
 }

@@ -1,12 +1,17 @@
 <div class="tagsComponent">
 	<div class="createTagForm">
 		<input type="text" id="createTagForm_tagName" (keyup)="$event.keyCode == 13 && createTag()">
-		<button id="createTagForm_createButton" (click)="createTag()">+</button>
+		<button id="createTagForm_createButton" (click)="createTag()">Add tag</button>
 	</div>
 
-	<div class="tags">
-		<div class="tag tagFrameHover" *ngFor="let tag of tags" draggable="true" (dragstart)="onDrag($event, tag)">
+	<div class="tags" id="tagList">
+		<a *ngFor="let tag of tags"
+				routerLink="/tag/{{tag.id}}"
+				class="tag tagFrameHover" 
+				draggable="true" 
+				(dragstart)="onDrag($event, tag)"
+				[attr.tag-id]="tag.id">
 			{{ tag.name }}
-		</div>
+		</a>
 	</div>
 </div>

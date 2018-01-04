@@ -1,0 +1,31 @@
+.tag {
+	display: inline-block;
+	margin: 5px;
+	border-radius: 5px;
+	color: #fff;
+}
+.tag > div {
+	display: flex;
+	flex-direction: row;
+	flex-wrap: nowrap;
+	justify-content: center;
+	align-items: center;
+	align-content: center;
+}
+.tag .name {
+	display: inline-block;
+	margin: 0;
+	margin: 5px 10px;
+}
+
+.tag .deleteButton {
+	background: none;
+	/*border: 1px solid #009cff;*/
+	border: none;
+	color: #eee;
+	height: 100%;
+}
+
+.tag .deleteButton:hover {
+	color: #f00;
+}

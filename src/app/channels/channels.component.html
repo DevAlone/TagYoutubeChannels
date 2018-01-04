@@ -1,7 +1,48 @@
 <div class="channels">
+	<div class="filterForm">
+		<div class="searchWrapper">
+			<button (click)="toggleCheckboxes()" title="{{ filtersAreOpened() ? 'Close filters' : 'Open filters' }}">
+				{{ filtersAreOpened() ? '<' : '>' }}
+			</button>
+		  	<input type="text" name="searchString" [(ngModel)]="filter.searchString" placeholder="search string">
+	  	</div>
+	  	<div class="checkboxes" id="checkboxes">
+		  	<label>
+		  		<span>In your subscriptions</span>
+		  		<input type="checkbox" name="inSubscriptions" [(ngModel)]="filter.inSubscriptions">
+		  	</label>
+		  	<label>
+		  		<span>Has new videos</span>
+		  		<input type="checkbox" name="hasNewVideos" [(ngModel)]="filter.hasNewVideos">
+		  	</label>
+		  	<label>
+		  		<span>Has note</span>
+		  		<input type="checkbox" name="isNoted" [(ngModel)]="filter.isNoted">
+		  	</label>
+		  	<label>
+		  		<span>Has tags</span>
+		  		<input 
+		  			type="checkbox" 
+		  			name="isTagged" 
+		  			[(ngModel)]="filter.isTagged"
+		  			(change)="filter.isNotTagged=false">
+		  	</label>
+		  	<label>
+		  		<span>Doesn't have tags</span>
+		  		<input 
+		  			type="checkbox" 
+		  			name="isNotTagged" 
+		  			[(ngModel)]="filter.isNotTagged" 
+		  			(change)="filter.isTagged=false">
+		  	</label>
+		  </div>
+	</div>
 	<a class="channel" 
 		*ngFor="let channel of channels" 
+		[hidden]="!(channel | filterChannel:filter)"
 		routerLink="/channel/{{channel.id}}"
+		draggable="true" 
+		(dragstart)="onDrag($event, channel)"
 		[class.selected]="isSelected(channel)"
 		(click)="onSelect(channel)">
 		<div>

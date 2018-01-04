@@ -73,6 +73,7 @@
 	height: 16px;*/
 	height: 100%;
 	padding-left: 5px;
+	vertical-align: middle;
 }
 
 .note { 
@@ -91,47 +92,4 @@
 .tags {
 	width: 100%;
 	box-sizing: border-box;
-}
-
-.dropZone {
-	box-sizing: border-box;
-	width: 100%;
-	background: #efefef;
-	padding: 10px;
-	min-height: 250px;
-}
-
-.dropZoneHeader {
-	display: flex;
-	flex-direction: row;
-	flex-wrap: wrap;
-	justify-content: space-between;
-	align-items: center;
-	align-content: center;
-}
-
-.tag {
-	display: inline-block;
-	/*background: #3ab3ff;*/
-	/*border: 1px solid #009cff;*/
-	margin: 5px;
-	border-radius: 5px;
-	color: #fff;
-}
-.tag .name {
-	display: inline-block;
-	margin: 0;
-	margin: 5px 10px;
-}
-
-.tag .deleteButton {
-	background: none;
-	/*border: 1px solid #009cff;*/
-	border: none;
-	color: #eee;
-	height: 100%;
-}
-
-.tag .deleteButton:hover {
-	color: #f00;
 }

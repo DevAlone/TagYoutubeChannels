@@ -9,115 +9,127 @@ declare var browser: any;
 
 @Injectable()
 export class TagService {
-  private tags: { [key:number]:Tag; } = {};
+    // private tags: { [key:number]:Tag; } = {};
+    private tagList: Tag[] = [];
+    private isInitialized = false;
 
-  constructor() { 
-    this.loadFromStorage();
-  }
-
-  getTags(): Tag[] {
-    var result: Tag[] = [];
-    for (var tagId in this.tags) {
-      var tag = this.tags[tagId];
-      result.push(tag);
+    constructor() { 
+        this.loadFromStorage();
     }
-    return result;
-  }
 
-  getTagById(tagId: number): Tag {
-    return this.tags[tagId];
-  }
+    getTags(): Tag[] {
+        return this.tagList;
+    }
 
-  saveTag(tag: Tag): void {
-    this.tags[tag.id] = tag;
-    // TODO: save it
-  }
+    getTagById(tagId: number): Promise<Tag> {
+        var self = this;
+        return new Promise<Tag>((resolve, reject) => {
+            function waiter() {
+                if (self.isInitialized)
+                    resolve(self.tagList.find(tag => tag.id == tagId));
+                else
+                    setTimeout(waiter, 100);
+            }
+            waiter();
+        });
+    }
 
-  // getTagById(tagId: number): Tag {
-  //   return this.tags.find(tag => tag.id == tagId);
-  // }
+    saveTag(tag: Tag): void {
+        this.saveToStorage();
+    }
 
-  // getTags(): Observable<Tag[]> {
-  //   return Observable.fromPromise(this.getFromStorage());
-  // }
+    addTag(tagName): Promise<void> {
+        var self = this;
 
-  // // returns true if tag was added, false otherwise
-  // addTag(tagName): Observable<void> {
-  //   var self = this;
+        return new Promise<void>(function(resolve, reject) {
+            browser.storage.sync.get("tags").then(function(item) {
+                var maximumId = 0;
+                for (var tag of self.tagList) {
+                    if (tagName === tag.name) {
+                        reject({
+                            type: "TagExists",
+                            tag: tag,
+                            message: "We already have tag \"" + tagName + "\""
+                        });
+                        return;
+                    }
+                    if (tag.id > maximumId)
+                        maximumId = tag.id;
+                }
 
-  //   return Observable.fromPromise(new Promise<void>(function(resolve, reject) {
-  //     browser.storage.sync.get("tags").then(function(item) {
-  //       var tags = item.tags;
-  //       if (tags === undefined) {
-  //           tags = {
-  //               lastId: 0,
-  //               items: {},
-  //           };
-  //       }
+                self.tagList.push(new Tag({
+                    id: maximumId + 1,
+                    name: tagName
+                }));
 
-  //       for (var id in tags.items) {
-  //           var tag = tags.items[id];
-  //           if (tagName === tag.name) {
-  //               reject("We already have tag \"" + tagName + "\"");
-  //               return;
-  //           }
-  //       }
+                self.saveToStorage().then(function() {
+                    resolve();
+                }, function(error) {
+                    reject(error);
+                    // NOTE: it can delete something else
+                    self.tagList.pop();
+                });
+            }, function(error) {
+                reject(error);
+            });
+        });
+    }
 
-  //       ++tags.lastId;
-  //       tags.items[tags.lastId] = {
-  //           name: tagName,
-  //       }
+    loadFromStorage(): Promise<void> {
+        var self = this;
 
-  //       browser.storage.sync.set({
-  //           tags: tags,
-  //       }).then(function() {
-  //           self.updateFromStorage();
-  //           resolve();
-  //       })
-  //     }, function(error) {
-  //         console.log(error);
-  //         reject();
-  //     });
-  //   }));
-  // }
+        return new Promise<void>(function(resolve, reject) {
+            browser.storage.sync.get("tags").then(function(item) {
+                if (item.tags === undefined) {
+                    item.tags = {
+                      // lastId: 0,
+                        items: {},
+                    };
+                }
 
-  // updateFromStorage() {
-  //   this.getFromStorage();
-  // }
+                self.tagList.splice(0, self.tagList.length);
 
-  loadFromStorage(): Promise<void> {
-    var self = this;
+                for (var id in item.tags.items) {
+                    var tag = item.tags.items[id];
+                    var tagId = parseInt(id);
+                    if (isNaN(tagId)) {
+                        console.log("some shit happened: tag id is not a number");
+                        continue;
+                    }
 
-    return new Promise<void>(function(resolve, reject) {
-        browser.storage.sync.get("tags").then(function(item) {
-          if (item.tags === undefined) {
-            item.tags = {
-              lastId: 0,
-              items: {},
-            };
-          }
+                    self.tagList.push(new Tag({
+                        id: tagId,
+                        name: tag.name
+                    }));
+                }
+                self.isInitialized = true;
+                resolve();
+            }, function(error) {
+                reject(error);
+            });
+        });
+    }
 
-          for (var member in self.tags) 
-            delete self.tags[member];
-
-          for (var id in item.tags.items) {
-            var tag = item.tags.items[id];
-            var tagId = parseInt(id);
-            if (isNaN(tagId)) {
-              console.log("some shit happened: tag id is not a number");
-              continue;
+    saveToStorage(): Promise<void> {
+        var self = this;
+        return new Promise<void>(function(resolve, reject) {
+            var tags = {
+                items: {},
             }
 
-            self.tags[id] = new Tag({
-              id: tagId,
-              name: tag.name
-            })
-          }
-          resolve();
-      }, function(error) {
-        reject(error);
-      });
-    });
-  }
+            for (var tag of self.tagList) {
+                tags.items[tag.id] = {
+                    name: tag.name
+                };
+            }
 
+            browser.storage.sync.set({
+                tags: tags
+            }).then(function() {
+                resolve();
+            }, function(error) {
+                reject(error);
+            });
+        });
+    }
 }

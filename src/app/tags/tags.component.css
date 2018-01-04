@@ -1,8 +1,16 @@
 .tagsComponent {
 	height: 100vh;
+
+	display: flex;
+	flex-direction: column;
+	flex-wrap: nowrap;
+	justify-content: flex-start;
+	align-items: stretch;
+	align-content: center;
 }
 .createTagForm {
-	height: 5vh;
+	/*height: 5vh;*/
+	width: 100%;
 
 	display: flex;
 	flex-direction: row;
@@ -10,23 +18,33 @@
 	justify-content: space-around;
 	align-items: center;
 	align-content: center;
+
+	padding: 10px;
 }
 .createTagForm > * {
 }
 .createTagForm > input {
 	/*flex-grow: 1;*/
-	width: 50%;
+	/*width: 50%;*/
+	flex-grow: 1;
+	min-width: 50%;
+	/*margin-right: 5px;*/
 }
 .createTagForm > button {
-	width: 25%;
+	/*width: 25%;*/
+	height: 100%;
+	/*margin: 0;*/
+	/*border: 1px solid #aeaeae;*/
+	white-space: nowrap;
 }
 .tags {
 	overflow-y: scroll;
-	height: 95vh;
+	flex-grow: 1;
+	/*height: 95vh;*/
 }
 
 .tag {
-	min-height: 50px;
+	min-height: 25px;
 	display: flex;
 	flex-direction: row;
 	flex-wrap: nowrap;
@@ -35,6 +53,10 @@
 	align-content: center;
 	cursor: pointer;
 	padding: 10px;
+
+	border-bottom: 1px solid #ddd;
+	text-decoration: none;
+	color: inherit;
 }
 
 .tag:hover {

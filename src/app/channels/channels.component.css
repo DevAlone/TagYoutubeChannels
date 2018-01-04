@@ -24,6 +24,10 @@
 	border-bottom: 1px solid #ddd;
 }
 
+.channel[hidden] {
+	display: none !important;
+}
+
 .channel:hover {
 	background: #cecece !important;
 }
@@ -71,4 +75,79 @@
 
 .newVideosCount {
 	
+}
+
+.filterForm {
+	display: flex;
+	flex-direction: column;
+	flex-wrap: nowrap;
+	justify-content: center;
+	align-items: stretch;
+	align-content: stretch;
+
+	padding: 10px;
+}
+
+.filterForm .searchWrapper {
+	display: flex;
+	flex-direction: row;
+	flex-wrap: nowrap;
+	justify-content: space-around;
+	align-items: center;
+	align-content: center;
+}
+
+.filterForm .searchWrapper > input {
+	flex-grow: 1;
+	margin-left: 10px;
+}
+
+.filterForm .searchWrapper > button {
+	padding: 0;
+}
+
+.filterForm label {
+	margin: 5px 0;
+}
+
+.filterForm .checkboxes {
+	box-sizing: border-box;
+
+	display: flex;
+	flex-direction: row;
+	flex-wrap: wrap;
+	justify-content: flex-start;
+	align-items: center;
+	align-content: center;
+
+	overflow: hidden;
+
+	background: #eee;
+	margin-top: 10px;
+	padding: 5px;
+
+	max-height: 1000px;
+
+	transition: max-height 0.2s ease-out;
+	transition: margin-top 0.5s ease-out;
+
+	font-size: 14px;
+}
+
+.filterForm .checkboxes[hidden="true"] {
+	max-height: 0 !important;
+	padding: 0 !important;
+	margin: 0 !important;
+}
+
+.filterForm .checkboxes > * {
+	display: inline-block;
+	border-bottom: 1px solid #aeaeae;
+	border-right: 1px solid #aeaeae;
+	margin: 5px;
+	padding: 5px;
+	/*padding: 5px;*/
+	/*margin: 5px;*/
+	/*border-radius: 5px;*/
+	/*box-sizing: border-box;*/
 }

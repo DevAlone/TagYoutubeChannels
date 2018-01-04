@@ -4,7 +4,7 @@
 		<div class="wrapper">
 			<div class="title" title="{{ channel.id }}"><h3>{{ channel.title }}<a class="watchOnYoutubeButton" href="https://www.youtube.com/channel/{{ channel.id }}" target="_blank" rel="nofollow noopener" title="watch on YouTube"><img src="https://www.youtube.com/favicon.ico"></a></h3></div>
 			<p class="newVideosCount newVideosFrame" title="new videos count">New videos count: {{ channel.newVideosCount }}</p>
-			<p *ngIf="channel.inSubscriptions" class="inSubscriptions">Channel in your subscriptions</p>
+			<p *ngIf="channel.inSubscriptions" class="inSubscriptions">Channel is in your subscriptions</p>
 		</div>
 	</div>
 	<div class="note">
@@ -12,20 +12,21 @@
 			placeholder="Your note about channel"
 			[(ngModel)]="channel.note" 
 			(keyup)="noteChanged()">
-			
 		</textarea>
 	</div>
 	<div class="tags" (drop)="dropTag($event)" (dragover)="$event.preventDefault();">
 		<div class="dropZone blocksFrame">
 			<div class="dropZoneHeader">
 				<p>Move tags right here --> <--</p>
-				<button (click)="clearTags()">Clear</button>
+				<button 
+					(click)="clearTags()"
+					*ngIf="channel.isTagged()">Clear</button>
 			</div>
-
-			<div class="tag tagFrame tagFrameHover" *ngFor="let tag of channel.tags" title="{{ tag.id }}">
-				<div class="name">{{ tag.name }}</div>
-				<button (click)="deleteTag(tag)" class="deleteButton" title="delete tag">X</button>
-			</div>
+			<app-channel-tags [channel]="channel"></app-channel-tags>
 		</div>
 	</div>
+</div>
+
+<div class="channel blocksFrame" *ngIf="!channel">
+	loading...
 </div>
