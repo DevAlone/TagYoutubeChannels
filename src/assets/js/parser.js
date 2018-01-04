@@ -49,7 +49,7 @@ function getChannelInfo(channelSidebarElement) {
     
     try {
         var aElement = channelSidebarElement.querySelector('a');
-        var idMatches = aElement.href.match(/\/channel\/([a-zA-Z0-9_\-\.]+)$/);;
+        var idMatches = aElement.href.match(/\/channel\/([a-zA-Z0-9_\-\.]+)$/);
 
         if (idMatches === null)
             throw "Bad link: " + aElement.href;
@@ -79,6 +79,7 @@ function getChannelInfo(channelSidebarElement) {
     } catch (e) {
         log('error');
         log(e);
+        return undefined;
     }
     
     return result;
@@ -95,11 +96,14 @@ function process() {
         channels = {}
         for (var element of document.getElementById('guide-channels').children) {
             var channelInfo = getChannelInfo(element);
-            channels[channelInfo.id] = {
-                title: channelInfo.title,
-                iconUrl: channelInfo.iconUrl,
-                newVideosCount: channelInfo.newVideosCount
-            };
+
+            if (channelInfo !== undefined) {
+                channels[channelInfo.id] = {
+                    title: channelInfo.title,
+                    iconUrl: channelInfo.iconUrl,
+                    newVideosCount: channelInfo.newVideosCount
+                };
+            }
         }
         
         updateChannelInStorage(myChannel, channels);
