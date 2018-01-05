@@ -2,32 +2,43 @@ function log(str) {
     console.log("TagYoutubeChannels: " + str.toString());
 }
 
-function getChannelsFromStorage() {
+function loadNextChannel(channels, storageId) {
     return new Promise((resolve, reject) => {
-        var channels = {};
-        function processResult(storage) {
-            for (var key in storage) {
-                if (key.startsWith("channel_"))
-                    channels[key.substr(8)] = storage[key];
+        function processResult (storage) {
+            if (storage["channel_" + storageId]) {
+                channels.push({
+                    storageId: "channel_" + storageId,
+                    channel: storage["channel_" + storageId]
+                });
+                loadNextChannel(channels, storageId + 1, resolve, reject);
+            } else {
+                resolve();
             }
-            resolve(channels);
         }
 
         if (typeof browser !== 'undefined') {
-            browser.storage.sync.get(null).then(
-                storage => processResult(storage), 
+            browser.storage.sync.get("channel_" + storageId).then(
+                (item) => processResult(item), 
                 error => reject(error)
             );
         } else {
-            chrome.storage.sync.get(null, (storage) => {
+            chrome.storage.sync.get("channel_" + storageId, (item) => {
                 if (chrome && chrome.runtime.error) {
                     reject(chrome.runtime.error);
                     return;
                 }
-
-                processResult(storage);
+                processResult(item);
             });
         }
+    });
+}
+
+function getChannelsFromStorage() {
+    return new Promise((resolve, reject) => {
+        var channels = [];
+        loadNextChannel(channels, 0).then(() => {
+            resolve(channels);
+        }, error => reject(error));
     });
 }
 
@@ -45,23 +56,35 @@ function updateChannelInStorage(myChannel, subscriptions) {
     getChannelsFromStorage().then((channels) => {
         console.log(channels);
 
-        for (var channelId in channels)
-            channels[channelId].inSubscriptions = false;
+        var channelById = {};
+        var maximumStorageId = 0;
+
+        for (var channel of channels) {
+            channel.channel.inSubscriptions = false;
+            channelById[channel.channel.id] = channel.channel;
+            if (channel.storageId > maximumStorageId)
+                maximumStorageId = channel.storageId;
+        }
 
         for (var id in subscriptions) {
             var subscription = subscriptions[id];
 
-            if (!channels[id]) {
-                channels[id] = {
+            if (!channelById[id]) {
+                var channel = {
                     title: subscription.title || "",
                     iconUrl: subscription.iconUrl || "",
                     newVideosCount: subscription.newVideosCount || 0,
                     inSubscriptions: true,
                     note: ""
-                }; 
+                };
+                channelById[id] = channel;
+                ++maximumStorageId;
+                channels.push({
+                    storageId: maximumStorageId,
+                    channel: channel
+                });
             } else {
-                var channel = channels[id];
-
+                var channel = channelById[id];
                 if (subscription.title)
                     channel.title = subscription.title;
                 if (typeof subscription.iconUrl === 'string' && subscription.iconUrl.length > 0)
@@ -72,20 +95,15 @@ function updateChannelInStorage(myChannel, subscriptions) {
             }
         }
 
-        var objToSave = {};
+        for (var channel of channels) {
+            var objToSave = {};
+            objToSave["channel_" + channel.storageId] = channel.chnanel;
 
-
-        for (var channelId in channels) {
-            var channel = channels[channelId];
-            objToSave["channel_" + channelId] = channel;
-        }
-
-        console.log(objToSave);
-
-        if (typeof browser !== 'undefined') {
-            browser.storage.sync.set(objToSave);
-        } else {
-            chrome.storage.sync.set(objToSave);
+            if (typeof browser !== 'undefined') {
+                browser.storage.sync.set(objToSave);
+            } else {
+                chrome.storage.sync.set(objToSave);
+            }
         }
     });
 }
@@ -185,7 +203,7 @@ function process() {
         log(e);
     }
     
-    setTimeout(process, 15000);
+    setTimeout(process, 5000);
 }
 
 

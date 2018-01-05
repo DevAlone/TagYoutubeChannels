@@ -16,6 +16,23 @@ p {
 	word-wrap: break-word;
 	word-break: break-word;
 }
+
+h3 {
+	margin: 5px 5px;
+}
+
+button::focus {
+	outline: 0;
+}
+
+button::-moz-focus-inner {
+	border: 0;
+}
+
+a {
+	transition: color 0.25s;
+}
+
 .tagFrame,
 .noteFrame,
 .newVideosFrame {

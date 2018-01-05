@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Channel } from '../channel';
 import { Tag } from '../tag';
 import { TagService } from '../tag.service';
@@ -19,6 +19,7 @@ export class TagDetailComponent implements OnInit {
 
 	constructor(
 		private route: ActivatedRoute,
+		private router: Router,
 		private tagService: TagService,
 		private channelTagService: ChannelTagRelationService,
 		private messageService: MessageService,
@@ -38,6 +39,18 @@ export class TagDetailComponent implements OnInit {
 				self.tag = tag;
 			});
 		});
+	}
+
+	deleteTag() {
+		if(!confirm("Are you sure? It will delete tag \"" + this.tag.name + "\""))
+			return;
+
+		var self = this;
+
+		this.channelTagService.deleteTag(self.tag).then(() => {
+			self.messageService.addMessage("tag was succesfully removed");
+			self.router.navigateByUrl("/");
+		}, error => self.messageService.addMessage(error));
 	}
 
 	ngOnDestroy() {
@@ -84,6 +97,10 @@ export class TagDetailComponent implements OnInit {
 
 	noteChanged(channel: Channel): void {
 		this.channelService.saveChannel(channel);
+	}
+
+	nameChanged(): void {
+		this.tagService.saveTag(this.tag);
 	}
 
 }

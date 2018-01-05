@@ -3,8 +3,40 @@
 	padding: 10px;
 }
 
+.tagDetail .name {
+	font-weight: inherit !important;
+	font-size: inherit !important;
+	border: inherit !important;
+	margin: inherit !important;
+	background: inherit !important;
+	padding: 0;
+}
+
 .header {
+	display: flex;
+	flex-direction: row;
+	flex-wrap: wrap;
+	justify-content: space-between;
+	align-items: center;
+	align-content: stretch;
+
 	border-bottom: 1px solid #aeaeae;
+}
+
+.deleteTagButton {
+	border: none;
+	background: none;
+	/*height: 100%;*/
+	/*width: 100%;*/
+	padding: 10px 15px;
+	margin: 0;
+	font-size: 20px;
+	cursor: pointer;
+}
+
+.deleteTagButton:hover {
+	background: #ddd;
+	color: #f00;
 }
 
 .channels {
@@ -36,6 +68,15 @@
 	padding: 10px 5px;
 	font-size: 15px;
 	text-align: center;
+}
+
+.channel .title a {
+	text-decoration: none;
+	color: inherit;
+}
+
+.channel .title a:hover {
+	color: #00f;
 }
 
 .channel .title .watchOnYoutubeButton {

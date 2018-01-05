@@ -7,6 +7,9 @@ import { ChannelService } from '../channel.service';
 import { TagService } from '../tag.service';
 import { MessageService } from '../message.service';
 import { ChannelTagRelationService } from '../channel-tag-relation.service';
+import { DomSanitizer } from '@angular/platform-browser';
+
+declare var videoFrame: any;
 
 
 @Component({
@@ -19,6 +22,7 @@ export class ChannelDetailComponent implements OnInit {
 	private sub: any;
 
 	constructor(
+		public sanitizer: DomSanitizer,
 		private route: ActivatedRoute,
     	private channelService: ChannelService,
     	private location: Location,
@@ -90,5 +94,17 @@ export class ChannelDetailComponent implements OnInit {
 
 	save(): void {
 		this.channelService.saveChannel(this.channel);
+	}
+	private channelUrl: any = undefined;
+	// private channelUrl = this.sanitizer.bypassSecurityTrustResourceUrl(
+	// 	this.channel.url
+	// );
+
+	getChannelUrl(): any {
+		if (this.channel && !this.channelUrl)
+			this.channelUrl = this.sanitizer.bypassSecurityTrustResourceUrl(
+				this.channel.url
+			);
+		return this.channelUrl;
 	}
 }

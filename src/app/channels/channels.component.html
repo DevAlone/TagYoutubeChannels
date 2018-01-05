@@ -45,7 +45,7 @@
 		(dragstart)="onDrag($event, channel)"
 		[class.selected]="isSelected(channel)"
 		(click)="onSelect(channel)">
-		<div>
+		<div *ngIf="channel.iconUrl">
 			<img class="icon" src="{{ channel.iconUrl }}">
 		</div>
 		<div class="info">

@@ -5,8 +5,10 @@ import { Channel } from './channel';
 import { Tag } from './tag';
 import { TagService } from './tag.service';
 
-declare var browser: any;
 declare var Arrays: any;
+
+declare var browser: any;
+declare var chrome: any;
 
 
 @Injectable()
@@ -18,7 +20,7 @@ export class ChannelService {
     constructor(
         private tagService: TagService
     ) { 
-        this.loadFromStorage();
+        this.loadFromStorage().then(() => {}, error => console.log("ERROR: " + error) );
     }
 
     getChannels(): Channel[] {
@@ -39,20 +41,36 @@ export class ChannelService {
     }
 
     saveChannel(channel: Channel): void {
-        var storedChannels = {};
+        this.saveToStorage();
+    }
 
-        for (var c of this.channelList) {
-            storedChannels[c.id] = {
-                title: c.title,
-                iconUrl: c.iconUrl,
-                newVideosCount: c.newVideosCount,
-                inSubscriptions: c.inSubscriptions,
-                note: c.note,
-            }
-        }
+    saveToStorage(): Promise<void> {
+        return new Promise<void>((resolve, reject) => {
+            var self = this;
+            self.getChannelsFromStorage().then((channels) => {
+                for (var channel of self.channelList) {
+                    channels[channel.id].note = channel.note;
+                }
 
-        browser.storage.sync.set({
-            channels: storedChannels
+                var objToSave = {};
+
+                for (var channelId in channels) {
+                    var _channel = channels[channelId];
+                    objToSave["channel_" + channelId] = _channel;
+                }
+
+                if (typeof browser !== 'undefined') {
+                    browser.storage.sync.set(objToSave).then(resolve, reject);
+                } else {
+                    chrome.storage.sync.set(objToSave, () => {
+                        if (chrome && chrome.runtime.error) {
+                            reject(chrome.runtime.error);
+                            return;
+                        }
+                        resolve();
+                    });
+                }
+            });
         });
     }
 
@@ -60,18 +78,16 @@ export class ChannelService {
         var self = this;
 
         return new Promise(function (resolve, reject) {
-            browser.storage.sync.get("channels").then(item => {
-                // for (var member in self.channels) 
-                //     delete self.channels[member];
+            console.log('loading');
+            self.getChannelsFromStorage().then((channels) => {
                 self.channelList.splice(0, self.channelList.length);
-
-                for (var channelId in item.channels) {
-                    var channel = item.channels[channelId];
+                for (var channelId in channels) {
+                    var channel = channels[channelId];
 
                     self.channelList.push(new Channel({
                         id: channelId,
                         title: channel.title,
-                        iconUrl: channel.iconUrl,
+                        iconUrl: channel.iconUrl || "",
                         newVideosCount: channel.newVideosCount,
                         inSubscriptions: channel.inSubscriptions,
                         note: channel.note
@@ -79,11 +95,38 @@ export class ChannelService {
                 }
 
                 self.isInitialized = true;
-
                 resolve();
-            }, error => {
-                reject(error);
-            });
+            }, error => reject(error) );
+        });
+    }
+
+    getChannelsFromStorage(): Promise<any> {
+        var self = this
+        return new Promise((resolve, reject) => {
+            var channels = {};
+            function processResult(storage) {
+                for (var key in storage) {
+                    if (key.startsWith("channel_"))
+                        channels[key.substr(8)] = storage[key];
+                }
+                resolve(channels);
+            }
+
+            if (typeof browser !== 'undefined') {
+                browser.storage.sync.get(null).then(
+                    storage => processResult(storage), 
+                    error => reject(error)
+                );
+            } else {
+                chrome.storage.sync.get(null, (storage) => {
+                    if (chrome && chrome.runtime.error) {
+                        reject(chrome.runtime.error);
+                        return;
+                    }
+
+                    processResult(storage);
+                });
+            }
         });
     }
 }

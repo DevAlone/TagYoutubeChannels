@@ -6,12 +6,12 @@
 
 	<div class="tags" id="tagList">
 		<a *ngFor="let tag of tags"
-				routerLink="/tag/{{tag.id}}"
+				routerLink="/tag/{{tag?.id}}"
 				class="tag tagFrameHover" 
 				draggable="true" 
 				(dragstart)="onDrag($event, tag)"
-				[attr.tag-id]="tag.id">
-			{{ tag.name }}
+				[attr.tag-id]="tag?.id">
+			{{ tag?.name }}
 		</a>
 	</div>
 </div>

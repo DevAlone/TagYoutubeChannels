@@ -5,6 +5,7 @@ import { Channel } from './channel';
 import { Tag } from './tag';
 
 declare var browser: any;
+declare var chrome: any;
 
 
 @Injectable()
@@ -39,20 +40,42 @@ export class ChannelTagRelationService {
 	clearTagsFromChannel(channel: Channel): Promise<void> {
 		var self = this;
 		return new Promise<void>((resolve, reject) => {
+			var waitList = [];
 			for (var tag of Array.from(channel.tags.values()))
-				self.deleteTagFromChannel(channel, tag);
+				waitList.push(self.deleteTagFromChannel(channel, tag));
 			
-			resolve();
+			Promise.all(waitList).then(() => {
+				resolve();
+			}, error => reject(error));
 		});
 	}
 
 	clearChannelsFromTag(tag: Tag): Promise<void> {
 		var self = this;
 		return new Promise<void>((resolve, reject) => {
+			var waitList = [];
 			for (var channel of Array.from(tag.channels.values()))
-				self.deleteTagFromChannel(channel, tag);
+				waitList.push(self.deleteTagFromChannel(channel, tag));
 			
-			resolve();
+			Promise.all(waitList).then(() => {
+				resolve();
+			}, error => reject(error));
+		});
+	}
+
+	deleteTag(tag: Tag): Promise<void> {
+		var self = this;
+		return new Promise<void>((resolve, reject) => {
+			var waitList = [];
+			for (var channel of Array.from(tag.channels.values())) {
+				self.deleteTagFromChannel(channel, tag);
+			}
+
+			Promise.all(waitList).then(() => {
+				self.tagService._deleteTag(tag).then(() => {
+					resolve();
+				}, error => reject(error));
+			}, error => reject(error));
 		});
 	}
 
@@ -96,9 +119,21 @@ export class ChannelTagRelationService {
 	save(): Promise<void> {
 		var self = this;
 		return new Promise<void>((resolve, reject) => {
-			browser.storage.sync.set({
-				channel_tag_relations: self.relations
-			}).then(() => resolve(), error => reject(error) );
+			if (typeof browser !== 'undefined') {
+				browser.storage.sync.set({
+					channel_tag_relations: self.relations
+				}).then(() => resolve(), error => reject(error) );
+			} else {
+				chrome.storage.sync.set({
+					channel_tag_relations: self.relations
+				}, () => {
+					if (chrome && chrome.runtime.error) {
+	                    reject(chrome.runtime.error);
+	                    return;
+	                }
+	                resolve();
+				});
+			}
 		});
 	}
 
@@ -106,7 +141,12 @@ export class ChannelTagRelationService {
 	loadFromStorage(): Promise<void> {
 		var self = this;
 		return new Promise<void>((resolve, reject) => {
-			browser.storage.sync.get("channel_tag_relations").then(item => {
+			function processItem (item) {
+				if (chrome && chrome.runtime.error) {
+                    reject(chrome.runtime.error);
+                    return;
+                }
+
 				self.relations.splice(0, self.relations.length);
 				if (item.channel_tag_relations === undefined) {
 					resolve();
@@ -118,7 +158,12 @@ export class ChannelTagRelationService {
 				}
 				self.isInitialized = true;
 				resolve();
-		    }, error => reject(error) );
+		    }
+
+		 	if (typeof browser !== 'undefined')
+                browser.storage.sync.get("channel_tag_relations").then(processItem, error => reject(error));
+            else
+                chrome.storage.sync.get("channel_tag_relations", processItem);
 		});
 	}
 }

@@ -9,14 +9,20 @@
         }
     },
     
-    "permissions": ["storage"],
+    "permissions": [
+        "storage",
+        "webRequest",
+        "webRequestBlocking",
+        "*://*.youtube.com/*",
+        "*://youtube.com/*"
+    ],
     "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'",
 
     "description": "Organize your subscriptions using tags like 'sport', 'travel', 'cooking'. It's very useful, try it out!",
 
-    "icons": {
-        "48": "assets/icons/icon_48.png"
-    },
+    // "icons": {
+    //     "48": "assets/icons/icon_48.png"
+    // },
 
     "content_scripts": [
         {
@@ -34,7 +40,7 @@
     },
     
     "options_ui": {
-        "page": "pages/main.html",
+        "page": "index.html",
         "browser_style": true
     }
 }

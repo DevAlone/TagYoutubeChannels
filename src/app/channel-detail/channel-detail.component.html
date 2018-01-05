@@ -1,6 +1,6 @@
 <div class="channel blocksFrame" *ngIf="channel">
 	<div class="header">
-		<img class="icon" src="{{ channel.iconUrl }}">
+		<img *ngIf="channel.iconUrl" class="icon" src="{{ channel.iconUrl }}">
 		<div class="wrapper">
 			<div class="title" title="{{ channel.id }}"><h3>{{ channel.title }}<a class="watchOnYoutubeButton" href="https://www.youtube.com/channel/{{ channel.id }}" target="_blank" rel="nofollow noopener" title="watch on YouTube"><img src="https://www.youtube.com/favicon.ico"></a></h3></div>
 			<p class="newVideosCount newVideosFrame" title="new videos count">New videos count: {{ channel.newVideosCount }}</p>
@@ -26,6 +26,12 @@
 		</div>
 	</div>
 </div>
+<!-- 
+<div class="youtubeChannelFrame" *ngIf="channel">
+	<iframe id="videoFrame" [src]="getChannelUrl()">
+		Your browser doesn't support iframes
+	</iframe>
+</div> -->
 
 <div class="channel blocksFrame" *ngIf="!channel">
 	loading...

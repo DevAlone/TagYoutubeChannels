@@ -1,6 +1,10 @@
 <div class="tagDetail blocksFrame" *ngIf="tag">
 	<div class="header">
-		<h3>{{ tag.name }}</h3>
+		<h3><input type="text" class="name" [(ngModel)]="tag.name" (keyup)="nameChanged()"></h3>
+		<!-- <h3>{{ tag.name }}</h3> -->
+		<button class="deleteTagButton" (click)="deleteTag()" title="remove this tag">
+			X
+		</button>
 	</div>
 
 	<div class="channels" (drop)="dropChannel($event)" (dragover)="$event.preventDefault();">
@@ -33,7 +37,7 @@
 					(click)="deleteChannel(channel)">X</button>
 					
 					<img class="icon" src="{{ channel.iconUrl }}">
-					<p class="title">{{ channel.title }}<a class="watchOnYoutubeButton" href="https://www.youtube.com/channel/{{ channel.id }}" target="_blank" rel="nofollow noopener" title="watch on YouTube"><img src="https://www.youtube.com/favicon.ico"></a></p>
+					<p class="title"><a routerLink="/channel/{{ channel.id }}">{{ channel.title }}</a><a class="watchOnYoutubeButton" href="https://www.youtube.com/channel/{{ channel.id }}" target="_blank" rel="nofollow noopener" title="watch on YouTube"><img src="https://www.youtube.com/favicon.ico"></a></p>
 					<div class="tags">
 						<app-channel-tags [channel]="channel"></app-channel-tags>
 					</div>

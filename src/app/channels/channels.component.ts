@@ -5,6 +5,8 @@ import { ChannelFilterObject } from '../channel-filter-object';
 import { Router, NavigationEnd } from '@angular/router';
 
 declare var browser: any;
+declare var chrome: any;
+
 declare var checkboxes: any;
 
 
@@ -28,25 +30,45 @@ export class ChannelsComponent implements OnInit {
 
 	ngOnInit() {
 		var self = this;
-		browser.storage.sync.get("channelFilterObject").then(function(storage) {
-			if (storage.channelFilterObject !== undefined)
-				self.filter = storage.channelFilterObject;
+		function processItem(item) {
 			self.saveChannelFilterToStorage();
-		}, function(error) {
-			console.log(error);
-			self.saveChannelFilterToStorage();
-		});
+			if (chrome && chrome.runtime.error) {
+                console.log(chrome.runtime.error);
+                return;
+            }
+
+			if (item.channelFilterObject !== undefined)
+				self.filter = item.channelFilterObject;
+		}
+		if (typeof browser !== 'undefined') {
+			browser.storage.sync.get("channelFilterObject").then(processItem, error => console.log(error) );
+		} else {
+			chrome.storage.sync.get("channelFilterObject", processItem);
+		}
+		
 	}
 
 	saveChannelFilterToStorage(): void {
-		browser.storage.sync.set({
-			channelFilterObject: this.filter
-		}).then(()=>{
-			setTimeout(()=>{this.saveChannelFilterToStorage()}, 1000);
-		}, (error)=>{
-			console.log(error);
-			setTimeout(()=>{this.saveChannelFilterToStorage()}, 1000);
-		});
+		var self = this;
+		function processItem (error) {
+			if (error)
+				console.log(error);
+
+			if (chrome && chrome.runtime.error)
+				console.log(chrome.runtime.error);
+
+			setTimeout(()=>{self.saveChannelFilterToStorage()}, 1000);
+		}
+
+		if (typeof browser !== 'undefined') {
+			browser.storage.sync.set({
+				channelFilterObject: this.filter
+			}).then(processItem, error => processItem(error) );
+		} else {
+			chrome.storage.sync.set({
+				channelFilterObject: this.filter
+			}, processItem);
+		}
 	}
 
 	onDrag(event, channel): void {
@@ -66,7 +88,7 @@ export class ChannelsComponent implements OnInit {
 	}
 
 	filtersAreOpened(): boolean {
-		if (checkboxes.getAttribute('hidden') == null)
+		if (checkboxes.getAttribute('hidden') == null) 
 			checkboxes.setAttribute('hidden', 'false');
 		
 		return checkboxes.getAttribute('hidden') == 'false';

@@ -6,6 +6,23 @@
 	box-sizing: border-box;
 }
 
+.youtubeChannelFrame {
+	margin: 10px;
+	/*width: 100%;*/
+	box-sizing: border-box;
+}
+
+.youtubeChannelFrame iframe {
+	display: block;
+	/*width: 100%;*/
+	min-height: 2000px;
+	/*height: 100%;*/
+
+    width: 100%;
+    /*transform: scale(0.8);
+    transform-origin: 0 0;*/
+}
+
 .header {
 	display: flex;
 	flex-direction: row;
