@@ -8,6 +8,9 @@ import { TagService } from '../tag.service';
 import { MessageService } from '../message.service';
 import { ChannelTagRelationService } from '../channel-tag-relation.service';
 import { DomSanitizer } from '@angular/platform-browser';
+import { SavingAnimationService } from '../saving-animation.service';
+import { LazyWatcherService } from '../lazy-watcher.service';
+import { LazyWatcher } from '../lazy-watcher';
 
 declare var videoFrame: any;
 
@@ -20,6 +23,7 @@ declare var videoFrame: any;
 export class ChannelDetailComponent implements OnInit {
 	channel: Channel;
 	private sub: any;
+	private noteWatcher: LazyWatcher;
 
 	constructor(
 		public sanitizer: DomSanitizer,
@@ -28,8 +32,15 @@ export class ChannelDetailComponent implements OnInit {
     	private location: Location,
     	public tagService: TagService,
     	private messageService: MessageService,
-    	private channelTagService: ChannelTagRelationService
-	) { }
+    	private channelTagService: ChannelTagRelationService,
+    	private savingAnimationService: SavingAnimationService,
+    	private lazyWatcherService: LazyWatcherService
+	) { 
+		var self = this;
+		this.noteWatcher = this.lazyWatcherService.getWatcher(() => {
+			self.save();
+		});
+	}
 
 	ngOnInit() {
 		var self = this;
@@ -79,9 +90,22 @@ export class ChannelDetailComponent implements OnInit {
 		this.channelTagService.deleteTagFromChannel(this.channel, tag);
 	}
 
+	// userIsTyping: boolean = false;
+	// noteIsChanged: boolean = false;
+
 	noteChanged(): void {
-		this.save();
+		this.noteWatcher.setChanging();
+		// this.noteIsChanged = true;
+		// this.userIsTyping = true;
 	}
+
+	// _checkNote(): void {
+	// 	if (this.noteIsChanged && !this.userIsTyping) {
+	// 		this.noteIsChanged = false;
+	// 		this.save();
+	// 	}
+	// 	this.userIsTyping = false;
+	// }
 
 	clearTags(): void {
 		if(!confirm("Are you sure? It will remove all tags from channel \"" + this.channel.title + "\"")) 
@@ -93,7 +117,13 @@ export class ChannelDetailComponent implements OnInit {
 	}
 
 	save(): void {
-		this.channelService.saveChannel(this.channel);
+		this.savingAnimationService.startSaving();
+		var self = this;
+		this.channelService.saveChannel(this.channel).then(() => {
+			self.savingAnimationService.stopSaving();
+		}, () => {
+			self.savingAnimationService.stopSaving();
+		});
 	}
 	private channelUrl: any = undefined;
 	// private channelUrl = this.sanitizer.bypassSecurityTrustResourceUrl(

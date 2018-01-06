@@ -8,10 +8,10 @@
 		</div>
 	</div>
 	<div class="note">
-		<textarea class="blocksFrame" 
+		<textarea class="noteFrame" 
 			placeholder="Your note about channel"
 			[(ngModel)]="channel.note" 
-			(keyup)="noteChanged()">
+			(input)="noteChanged()">
 		</textarea>
 	</div>
 	<div class="tags" (drop)="dropTag($event)" (dragover)="$event.preventDefault();">

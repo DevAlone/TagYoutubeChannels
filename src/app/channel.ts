@@ -21,8 +21,8 @@ export class Channel {
 
 	set note(value: string) {
 		this._note = value;
-		if (typeof chrome !== 'undefined')
-			this._note = this._note.substr(0, 4096);
+		// if (typeof chrome !== 'undefined')
+		// 	this._note = this._note.substr(0, 4096);
 	}
 
 	public constructor(init?:Partial<Channel>) {

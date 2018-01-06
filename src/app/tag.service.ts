@@ -3,6 +3,7 @@ import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/observable/fromPromise';
 import { of } from 'rxjs/observable/of';
 import { Tag } from './tag';
+import { SavingAnimationService } from './saving-animation.service';
 
 declare var browser: any;
 declare var chrome: any;
@@ -14,7 +15,7 @@ export class TagService {
     private tagList: Tag[] = [];
     private isInitialized = false;
 
-    constructor() { 
+    constructor(private savingAnimationService: SavingAnimationService) { 
         this.loadFromStorage();
     }
 
@@ -81,7 +82,7 @@ export class TagService {
     _deleteTag(tag: Tag): Promise<void> {
         var self = this;
         return new Promise((resolve, reject) => {    
-            var tmpTags = self.tagList;
+            var tmpTags = self.tagList.slice();
             self.tagList.splice(0, self.tagList.length);
 
             for (var _tag of tmpTags) {
@@ -106,7 +107,7 @@ export class TagService {
 
     loadFromStorage(): Promise<void> {
         var self = this;
-
+        
         return new Promise<void>(function(resolve, reject) {
             self.getTagsFromStorage().then(tags => {
                 self.tagList.splice(0, self.tagList.length);
@@ -123,13 +124,15 @@ export class TagService {
                     }));
                 }
                 self.isInitialized = true;
+                
                 resolve();
-            }, error => reject(error) );
+            }, error => { reject(error) } );
         });
     }
 
     saveToStorage(): Promise<void> {
         var self = this;
+        self.savingAnimationService.startSaving();
         return new Promise<void>((resolve, reject) => {
             var objToSave = {};
 
@@ -139,15 +142,23 @@ export class TagService {
                 };
             }
 
+            function processResult(error?) {
+                self.savingAnimationService.stopSaving();
+                if (error)
+                    reject(error);
+                else
+                    resolve();
+            }
+
             if (typeof browser !== 'undefined') {
-                browser.storage.sync.set(objToSave).then(resolve, reject);
+                browser.storage.sync.set(objToSave).then(processResult, processResult);
             } else {
                 chrome.storage.sync.set(objToSave, () => {
                     if (chrome && chrome.runtime.error) {
-                        reject(chrome.runtime.error);
+                        processResult(chrome.runtime.error);
                         return;
                     }
-                    resolve();
+                    processResult();
                 });
             }
         });

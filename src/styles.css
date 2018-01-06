@@ -40,12 +40,13 @@ a {
 .noteFrame,
 .newVideosFrame {
 	padding: 2px 5px;
-	border-radius: 5px;
+	/*border-radius: 5px;*/
 }
 
 .tagFrame {
 	background: #3ab3ff;
 	border: 1px solid #009cff;
+	border-radius: 5px;
 }
 
 .tagFrameHover:hover {
@@ -54,18 +55,20 @@ a {
 
 .newVideosFrame {
 	background: #aaffac;
-	border: solid 1px #82ff84;
+	/*border: solid 1px #82ff84;*/
 
 }
 
 .blocksFrame {
-	border: 1px solid #aeaeae;
-	border-radius: 5px;
+	/*border: 1px solid #aeaeae;*/
+	/*border-radius: 5px;*/
+	border: 0px solid #000;
 }
 
 .noteFrame {
 	background: #ffde75;
-	border: solid 1px #fcd453;
+	/*border: solid 1px #fcd453;*/
+	border: none;
 }
 
 .dropZone {
@@ -87,7 +90,7 @@ a {
 
 .channelFrame {
 	background: #fff;
-	border: 1px solid #aeaeae;
+	/*border: 1px solid #aeaeae;*/
 	/*padding: 5px;*/
 	margin: 10px;
 }

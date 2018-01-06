@@ -33,14 +33,24 @@ export class ChannelsComponent implements OnInit {
 	ngOnInit() {
 		var self = this;
 		function processItem(item) {
-			self.saveChannelFilterToStorage();
 			if (chrome && chrome.runtime.error) {
                 console.log(chrome.runtime.error);
                 return;
             }
 
-			if (item.channelFilterObject !== undefined)
-				self.filter = item.channelFilterObject;
+			if (item.channelFilterObject !== undefined) {
+				self.filter.searchString = item.channelFilterObject.searchString;
+				self.filter.inSubscriptions = item.channelFilterObject.inSubscriptions;
+				self.filter.hasNewVideos = item.channelFilterObject.hasNewVideos;
+				self.filter.isNoted = item.channelFilterObject.isNoted;
+				self.filter.isTagged = item.channelFilterObject.isTagged;
+				self.filter.isNotTagged = item.channelFilterObject.isNotTagged;
+				self.filter.tagsSearchString = item.channelFilterObject.tagsSearchString;
+				if (typeof item.channelFilterObject.tagsStrictMode !== 'undefined')
+					self.filter.tagsStrictMode = item.channelFilterObject.tagsStrictMode;
+			}
+			
+			self.saveChannelFilterToStorage();
 		}
 		if (typeof browser !== 'undefined') {
 			browser.storage.sync.get("channelFilterObject").then(processItem, error => console.log(error) );
@@ -62,13 +72,24 @@ export class ChannelsComponent implements OnInit {
 			setTimeout(()=>{self.saveChannelFilterToStorage()}, 1000);
 		}
 
+		let objectToSave = {
+			searchString: self.filter.searchString,
+			inSubscriptions: self.filter.inSubscriptions,
+			hasNewVideos: self.filter.hasNewVideos,
+			isNoted: self.filter.isNoted,
+			isTagged: self.filter.isTagged,
+			isNotTagged: self.filter.isNotTagged,
+			tagsSearchString: self.filter.tagsSearchString,
+			tagsStrictMode: self.filter.tagsStrictMode,
+		};
+
 		if (typeof browser !== 'undefined') {
 			browser.storage.sync.set({
-				channelFilterObject: this.filter
+				channelFilterObject: objectToSave
 			}).then(processItem, error => processItem(error) );
 		} else {
 			chrome.storage.sync.set({
-				channelFilterObject: this.filter
+				channelFilterObject: objectToSave
 			}, processItem);
 		}
 	}

@@ -1,3 +1,5 @@
+// TODO: fix last channel subscriptions
+
 function log(str) {
     console.log("TagYoutubeChannels: " + str.toString());
 }

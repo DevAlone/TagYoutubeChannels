@@ -4,6 +4,7 @@ import { Injectable } from '@angular/core';
 import { Channel } from './channel';
 import { Tag } from './tag';
 import { TagService } from './tag.service';
+import { SavingAnimationService } from './saving-animation.service';
 
 declare var Arrays: any;
 
@@ -18,7 +19,8 @@ export class ChannelService {
     private isInitialized: boolean = false;
 
     constructor(
-        private tagService: TagService
+        private tagService: TagService,
+        private savingAnimationService: SavingAnimationService
     ) { 
         this.loadFromStorage().then(() => {}, error => console.log("ERROR: " + error) );
     }
@@ -55,8 +57,9 @@ export class ChannelService {
     }
 
     saveToStorage(): Promise<void> {
+        var self = this;
+        self.savingAnimationService.startSaving();
         return new Promise<void>((resolve, reject) => {
-            var self = this;
             self.getChannelsFromStorage().then((channels) => {
                 for (var channel of self.channelList) {
                     if (channels[channel.id]) {
@@ -76,15 +79,24 @@ export class ChannelService {
                     objToSave["channel_" + channelId] = _channel;
                 }
 
+                function processResult(error?:any) {
+                    self.savingAnimationService.stopSaving();
+                    if (error) {
+                        reject(error);
+                    } else {
+                        resolve();
+                    }
+                }
+
                 if (typeof browser !== 'undefined') {
-                    browser.storage.sync.set(objToSave).then(resolve, reject);
+                    browser.storage.sync.set(objToSave).then(processResult, processResult);
                 } else {
                     chrome.storage.sync.set(objToSave, () => {
                         if (chrome && chrome.runtime.error) {
-                            reject(chrome.runtime.error);
+                            processResult(chrome.runtime.error);
                             return;
                         }
-                        resolve();
+                        processResult();
                     });
                 }
             });

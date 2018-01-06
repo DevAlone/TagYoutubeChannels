@@ -155,13 +155,13 @@
 	margin: 0 !important;
 }
 
-.filterForm .checkboxes > * {
+.filterForm .checkboxes > label {
 	display: inline-block;
 	/*border: 1px solid #aeaeae;*/
 	border-bottom: 1px solid #aeaeae;
 	border-right: 1px solid #aeaeae;
 	margin: 2px;
-	padding: 2px;
+	padding: 5px;
 	/*background: #eee;*/
 	/*padding: 5px;*/
 	/*margin: 5px;*/
@@ -169,8 +169,23 @@
 	/*box-sizing: border-box;*/
 }
 
-.filterForm .checkboxes > * > * {
+.filterForm .checkboxes > label > * {
 	padding: 0;
 	margin: 0;
 	vertical-align: middle;
+}
+
+.filterForm .checkboxes .tagsSearchBox {
+	width: 100%;
+	margin-top: 5px;
+	display: flex;
+	flex-direction: row;
+	flex-wrap: nowrap;
+	justify-content: space-between;
+	align-items: stretch;
+	align-content: center;
+}
+
+.filterForm .checkboxes .tagsSearchBox input[type="text"] {
+	flex-grow: 1;
 }

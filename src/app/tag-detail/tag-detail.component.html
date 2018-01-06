@@ -28,7 +28,7 @@
 							title="Your note about channel" 
 							placeholder="Your note about channel"
 							[(ngModel)]="channel.note" 
-							(keyup)="noteChanged(channel)">
+							(input)="noteChanged(channel)">
 						</textarea>
 					</div>
 					<button 

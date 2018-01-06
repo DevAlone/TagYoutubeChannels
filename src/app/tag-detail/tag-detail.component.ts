@@ -6,6 +6,8 @@ import { TagService } from '../tag.service';
 import { ChannelService } from '../channel.service';
 import { ChannelTagRelationService } from '../channel-tag-relation.service';
 import { MessageService } from '../message.service';
+import { LazyWatcherService } from '../lazy-watcher.service';
+import { LazyWatcher } from '../lazy-watcher';
 
 
 @Component({
@@ -16,6 +18,8 @@ import { MessageService } from '../message.service';
 export class TagDetailComponent implements OnInit {
 	tag: Tag;
 	private sub: any;
+	private nameWatcher: LazyWatcher;
+	private channelWatchers: { [key:number]:LazyWatcher } = {};
 
 	constructor(
 		private route: ActivatedRoute,
@@ -23,8 +27,14 @@ export class TagDetailComponent implements OnInit {
 		private tagService: TagService,
 		private channelTagService: ChannelTagRelationService,
 		private messageService: MessageService,
-		private channelService: ChannelService
-	) { }
+		private channelService: ChannelService,
+		private lazyWatcherService: LazyWatcherService
+	) {
+		var self = this;
+		this.nameWatcher = this.lazyWatcherService.getWatcher(() => {
+			self.tagService.saveTag(this.tag);
+		});
+	}
 
 	ngOnInit() {
 		var self = this;
@@ -96,11 +106,21 @@ export class TagDetailComponent implements OnInit {
 	}
 
 	noteChanged(channel: Channel): void {
-		this.channelService.saveChannel(channel);
+		if (!this.channelWatchers[channel.id]) {
+			console.log('creating watcher');
+			var self = this;
+			let watchingChannel = channel;
+			this.channelWatchers[channel.id] = this.lazyWatcherService.getWatcher(() => {
+				self.channelService.saveChannel(watchingChannel);
+			});
+		}
+
+		this.channelWatchers[channel.id].setChanging();
 	}
 
 	nameChanged(): void {
-		this.tagService.saveTag(this.tag);
+		// this.tagService.saveTag(this.tag);
+		this.nameWatcher.setChanging();
 	}
 
 }

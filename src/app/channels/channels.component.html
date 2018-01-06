@@ -14,6 +14,7 @@
 			<button (click)="toggleCheckboxes()" title="{{ filtersAreOpened() ? 'Close filters' : 'Open filters' }}">
 				{{ filtersAreOpened() ? '<' : '>' }}
 			</button>
+
 	  	</div>
 	  	<div class="checkboxes" id="checkboxes">
 		  	<label>
@@ -31,6 +32,7 @@
 		  	<label>
 		  		<span>Has tags</span>
 		  		<input 
+		  			id="channelsFilterCheckbox_isTagged"
 		  			type="checkbox" 
 		  			name="isTagged" 
 		  			[(ngModel)]="filter.isTagged"
@@ -39,12 +41,23 @@
 		  	<label>
 		  		<span>Doesn't have tags</span>
 		  		<input 
+		  			id="channelsFilterCheckbox_isNotTagged"
 		  			type="checkbox" 
 		  			name="isNotTagged" 
 		  			[(ngModel)]="filter.isNotTagged" 
 		  			(change)="filter.isTagged=false">
 		  	</label>
-		  </div>
+		  	<div class="tagsSearchBox">
+			  	<input 
+			  		type="text" 
+			  		name="tagsSearchString" 
+			  		[(ngModel)]="filter.tagsSearchString"
+			  		placeholder="with tags(comma separated)">
+			  	<input type="checkbox" name="tagsStrictMode"
+			  		[(ngModel)]="filter.tagsStrictMode"
+			  		title="strict mode(if set, you cannot search by part of tag)">
+		  	</div>
+		</div>
 	</div>
 	<a class="channel" 
 		*ngFor="let channel of channels" 

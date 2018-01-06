@@ -1,0 +1,68 @@
+.savingAnimation {
+	position: fixed;
+	bottom: 0;
+	right: 0;
+	width: 25%;
+	padding-top: 25%;
+	margin: 0;
+	padding: 0;
+	z-index: 5;
+}
+
+.savingAnimation[visible="false"] {
+	display: none;
+}
+
+.wrapper {
+	width: 100%;
+	height: 100%;
+	display: flex;
+	flex-direction: column;
+	flex-wrap: wrap;
+	align-items: center;
+
+	/*opacity: 0.9;*/
+	position: relative;
+}
+
+.saving {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+
+	display: flex;
+	flex-direction: row;
+	flex-wrap: wrap;
+	justify-content: center;
+	align-items: center;
+	align-content: center;
+
+	z-index: 15
+}
+
+.saving > * {
+	font-size: 20px;
+	background: rgba(255, 255, 255, 0.5);
+	padding: 10px 20px;
+	border-radius: 50px;
+}
+
+.overlay {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background-image: radial-gradient(rgba(255, 255, 255, 0), rgba(255, 255, 255, 1) 75%, rgba(255, 255, 255, 1));
+	z-index: 9;
+}
+
+img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	/*object-position: 50% 50%;*/
+	z-index: 5;
+}
