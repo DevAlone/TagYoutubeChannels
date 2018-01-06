@@ -1,17 +1,40 @@
 .channels {
-	overflow-y: scroll;
 	height: 100vh;
 }
 
 .channels .selected {
-	/*background: red;*/
 	background: #e5e5e5;
 }
 
+.channels[visible="false"] {
+	display: none;
+	overflow: hidden;
+	padding: 0;
+	margin: 0;
+}
+
+.openChannelsButton {
+	display: none;
+
+	padding: 10px 5px;
+}
+
+.openChannelsButton > button {
+	padding: 0;
+}
+
+.openChannelsButton[visible="true"] {
+	display: block;
+}
+
 .channel {
+	max-width: 100%;
+	height: auto;
+	box-sizing: border-box;
+	
 	display: flex;
 	flex-direction: row;
-	flex-wrap: nowrap;
+	flex-wrap: wrap;
 	justify-content: flex-start;
 	align-items: stretch;
 	align-content: center;
@@ -52,15 +75,12 @@
 	align-items: stretch;
 	align-content: center;
 
-	/*padding: 10px;*/
 	padding-left: 10px;
 }
 
 .title {
 	margin: 0 0 5px 0;
-	/*width: 100%;*/
 	word-wrap: break-word;
-	/*background: red;*/
 }
 
 .icon {
@@ -85,7 +105,7 @@
 	align-items: stretch;
 	align-content: stretch;
 
-	padding: 10px;
+	padding: 10px 5px;
 }
 
 .filterForm .searchWrapper {
@@ -99,7 +119,8 @@
 
 .filterForm .searchWrapper > input {
 	flex-grow: 1;
-	margin-left: 10px;
+	min-width: 10px;
+	margin: 0 10px;
 }
 
 .filterForm .searchWrapper > button {
@@ -121,16 +142,10 @@
 	align-content: center;
 
 	overflow: hidden;
-
-	background: #eee;
 	margin-top: 10px;
-	padding: 5px;
-
 	max-height: 1000px;
-
 	transition: max-height 0.2s ease-out;
 	transition: margin-top 0.5s ease-out;
-
 	font-size: 14px;
 }
 
@@ -142,12 +157,20 @@
 
 .filterForm .checkboxes > * {
 	display: inline-block;
+	/*border: 1px solid #aeaeae;*/
 	border-bottom: 1px solid #aeaeae;
 	border-right: 1px solid #aeaeae;
-	margin: 5px;
-	padding: 5px;
+	margin: 2px;
+	padding: 2px;
+	/*background: #eee;*/
 	/*padding: 5px;*/
 	/*margin: 5px;*/
 	/*border-radius: 5px;*/
 	/*box-sizing: border-box;*/
+}
+
+.filterForm .checkboxes > * > * {
+	padding: 0;
+	margin: 0;
+	vertical-align: middle;
 }

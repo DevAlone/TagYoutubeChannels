@@ -14,6 +14,7 @@ declare var tagList: any;
   styleUrls: ['./tags.component.css'],
 })
 export class TagsComponent implements OnInit {
+  public isHidden: boolean = false;
   get tags(): Tag[] {
     return this.tagService.getTags();
   }

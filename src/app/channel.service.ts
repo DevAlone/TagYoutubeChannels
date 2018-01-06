@@ -40,8 +40,18 @@ export class ChannelService {
         });
     }
 
-    saveChannel(channel: Channel): void {
-        this.saveToStorage();
+    saveChannel(channel: Channel): Promise<void> {
+        var self = this;
+        return new Promise<void>((resolve, reject) => {
+            self.saveToStorage().then(resolve, reject);
+        });
+    }
+
+    saveChannels(channels: Channel[]): Promise<void> {
+        var self = this;
+        return new Promise<void>((resolve, reject) => {
+            self.saveToStorage().then(resolve, reject);
+        });
     }
 
     saveToStorage(): Promise<void> {
@@ -49,7 +59,14 @@ export class ChannelService {
             var self = this;
             self.getChannelsFromStorage().then((channels) => {
                 for (var channel of self.channelList) {
-                    channels[channel.id].note = channel.note;
+                    if (channels[channel.id]) {
+                        channels[channel.id].note = channel.note;
+                        var tags = [];
+                        for (var tag of Array.from(channel.tags.values()))
+                            tags.push(tag.id);
+
+                        channels[channel.id].tags = tags;
+                    }
                 }
 
                 var objToSave = {};
@@ -78,20 +95,31 @@ export class ChannelService {
         var self = this;
 
         return new Promise(function (resolve, reject) {
-            console.log('loading');
             self.getChannelsFromStorage().then((channels) => {
                 self.channelList.splice(0, self.channelList.length);
                 for (var channelId in channels) {
                     var channel = channels[channelId];
 
-                    self.channelList.push(new Channel({
+                    let newChannel = new Channel({
                         id: channelId,
                         title: channel.title,
                         iconUrl: channel.iconUrl || "",
                         newVideosCount: channel.newVideosCount,
                         inSubscriptions: channel.inSubscriptions,
-                        note: channel.note
-                    }));
+                        note: channel.note || ""
+                    });
+
+                    self.channelList.push(newChannel);
+                    if (channel.tags) {
+                        for (var tagId of channel.tags) {
+                            self.tagService.getTagById(tagId).then(tag => {
+                                if (tag) {
+                                    newChannel.tags.add(tag);
+                                    tag.channels.add(newChannel);
+                                }
+                            });
+                        }
+                    }
                 }
 
                 self.isInitialized = true;

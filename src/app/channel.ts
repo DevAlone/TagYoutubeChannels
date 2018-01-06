@@ -1,5 +1,7 @@
 import { Tag } from './tag';
 
+declare var chrome: any;
+
 
 export class Channel {
 	id: string;
@@ -7,8 +9,21 @@ export class Channel {
 	iconUrl: string;
 	newVideosCount: number;
 	inSubscriptions: boolean;
-	note: string;
+	_note: string;
 	tags: Set<Tag> = new Set<Tag>();
+
+	get note(): string {
+		if (!this._note)
+			this._note = "";
+
+		return this._note;
+	}
+
+	set note(value: string) {
+		this._note = value;
+		if (typeof chrome !== 'undefined')
+			this._note = this._note.substr(0, 4096);
+	}
 
 	public constructor(init?:Partial<Channel>) {
         Object.assign(this, init);

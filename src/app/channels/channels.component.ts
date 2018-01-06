@@ -22,6 +22,8 @@ export class ChannelsComponent implements OnInit {
 	}
 	filter: ChannelFilterObject = new ChannelFilterObject();
 
+	isHidden: boolean = false;
+
 	constructor(
 		private router: Router,
 		private channelService: ChannelService

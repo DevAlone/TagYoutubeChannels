@@ -31,6 +31,9 @@ button::-moz-focus-inner {
 
 a {
 	transition: color 0.25s;
+	overflow-wrap: break-word;
+	word-wrap: break-word;
+	word-break: break-word;
 }
 
 .tagFrame,

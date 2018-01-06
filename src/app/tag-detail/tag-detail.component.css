@@ -1,6 +1,5 @@
 .tagDetail {
-	margin: 10px;
-	padding: 10px;
+	
 }
 
 .tagDetail .name {
@@ -26,8 +25,6 @@
 .deleteTagButton {
 	border: none;
 	background: none;
-	/*height: 100%;*/
-	/*width: 100%;*/
 	padding: 10px 15px;
 	margin: 0;
 	font-size: 20px;
@@ -40,28 +37,31 @@
 }
 
 .channels {
-
 	margin-top: 10px;
 }
 
+.channels .dropZone {
+	
+}
+
 .channels .dropZone .container {
+	width: 100%;
 	display: flex;
 	flex-direction: row;
 	flex-wrap: wrap;
 	justify-content: center;
 	align-items: center;
 	align-content: center;
+	overflow: hidden;
 }
 
 .channel {
 	position: relative;
 	display: inline-block;
 	width: 180px;
-	/*border: 1px solid #aeaeae;*/
 	background: #fff;
 	border: none;
 	z-index: 1;
-	/*overflow: auto;*/
 }
 
 .channel .title {
@@ -81,7 +81,6 @@
 
 .channel .title .watchOnYoutubeButton {
 	margin-left: 5px;
-	/*vertical-align: bottom;*/
 }
 .channel .title .watchOnYoutubeButton img {
 	vertical-align: middle;
@@ -118,7 +117,6 @@
 	top: 0;
 	right: 0;
 	border: none;
-	/*padding: 0;*/
 	margin: 0;
 	width: 35px;
 	height: 35px;
@@ -149,7 +147,6 @@
 	width: 100%;
 	height: 100%;
 	padding: 10px;
-	box-sizing: border-box;
 }
 .channel .note .content > * {
 	width: 100%;
@@ -176,9 +173,6 @@
 	left: 0;
 	width: 100% !important;
 	height: 100% !important;
-	/*padding: 10px !important;*/
-	box-sizing: border-box;
-	/*overflow-y: auto;*/
 }
 .channel .note:hover .content {
 	overflow-x: none;
@@ -195,10 +189,6 @@
 }
 
 .tags {
-	/*overflow-y: hidden;
-	overflow-x: auto;*/
-	/*background: red;*/
-	/*padding: 0 5px;*/
 	padding: 5px;
 }
 
@@ -210,18 +200,6 @@
 	width: 100%;
 }
 /deep/ app-tag-detail .channel app-channel-tags .tags {
-	/*width: 50px;*/
-	/*overflow: auto;*/
-	/*padding: 50px;*/
-	/*display: flex !important;
-	flex-direction: row !important;
-	flex-wrap: nowrap !important;
-	justify-content: center !important;
-	align-items: center !important;
-	align-content: center !important;*/
-
-	/*height: 50px !important;*/
-	/*height: 50px;*/
 	overflow: auto;
 	white-space: nowrap;
 }

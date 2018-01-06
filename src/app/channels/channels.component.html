@@ -1,10 +1,19 @@
-<div class="channels">
+<div class="openChannelsButton" [attr.visible]="isHidden ? 'true' : 'false'">
+	<button (click)="isHidden = false" title="Show panel">
+		>
+	</button>
+</div>
+
+<div class="channels" [attr.visible]="isHidden ? 'false' : 'true'">
 	<div class="filterForm">
 		<div class="searchWrapper">
+			<button (click)="isHidden = true" title="Hide panel">
+				<
+			</button>
+		  	<input type="text" name="searchString" [(ngModel)]="filter.searchString" placeholder="search string">
 			<button (click)="toggleCheckboxes()" title="{{ filtersAreOpened() ? 'Close filters' : 'Open filters' }}">
 				{{ filtersAreOpened() ? '<' : '>' }}
 			</button>
-		  	<input type="text" name="searchString" [(ngModel)]="filter.searchString" placeholder="search string">
 	  	</div>
 	  	<div class="checkboxes" id="checkboxes">
 		  	<label>

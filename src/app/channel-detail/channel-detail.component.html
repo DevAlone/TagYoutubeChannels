@@ -1,4 +1,4 @@
-<div class="channel blocksFrame" *ngIf="channel">
+<div class="channel" *ngIf="channel">
 	<div class="header">
 		<img *ngIf="channel.iconUrl" class="icon" src="{{ channel.iconUrl }}">
 		<div class="wrapper">
@@ -33,6 +33,6 @@
 	</iframe>
 </div> -->
 
-<div class="channel blocksFrame" *ngIf="!channel">
+<div class="channel" *ngIf="!channel">
 	loading...
 </div>

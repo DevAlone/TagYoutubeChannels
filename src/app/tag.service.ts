@@ -57,29 +57,50 @@ export class TagService {
                     maximumId = tag.id;
             }
 
-            self.tagList.push(new Tag({
+            var tagToSave = new Tag({
                 id: maximumId + 1,
                 name: tagName
-            }));
+            });
+
+            self.tagList.push(tagToSave);
 
             self.saveToStorage().then(function() {
                 resolve();
             }, function(error) {
+                var tmpTags = self.tagList;
+                self.tagList.splice(0, self.tagList.length);
+                for (var _tag of tmpTags)
+                    if (_tag.id !== tagToSave.id)
+                        self.tagList.push(_tag);
+
                 reject(error);
-                // NOTE: it can delete something else
-                self.tagList.pop();
             });
         });
     }
 
     _deleteTag(tag: Tag): Promise<void> {
-        // TODO: fix it
         var self = this;
-        return new Promise((resolve, reject) => {
-            delete self.tagList[self.tagList.indexOf(tag)];
-            self.saveToStorage().then(() => {
-                self.loadFromStorage().then( () => resolve(), error => reject(error) );
-            }, error => reject(error) );
+        return new Promise((resolve, reject) => {    
+            var tmpTags = self.tagList;
+            self.tagList.splice(0, self.tagList.length);
+
+            for (var _tag of tmpTags) {
+                if (_tag.id !== tag.id)
+                    self.tagList.push(_tag);
+            }
+
+            var tagStrId = 'tag_' + tag.id;
+
+            if (typeof browser !== 'undefined') {
+                browser.storage.sync.remove(tagStrId).then(resolve, reject);
+            } else {
+                chrome.storage.sync.remove(tagStrId, (storage) => {
+                    if (chrome && chrome.runtime.error)
+                        reject(chrome.runtime.error);
+                    else
+                        resolve();
+                });
+            }
         });
     }
 
@@ -108,38 +129,27 @@ export class TagService {
     }
 
     saveToStorage(): Promise<void> {
+        var self = this;
         return new Promise<void>((resolve, reject) => {
-            var self = this;
-            self.getTagsFromStorage().then((tags) => {
-                for (var tag of self.tagList) {
-                    if (tags[tag.id]) {
-                        tags[tag.id].name = tag.name;
-                    } else {
-                        tags[tag.id].name = {
-                            name: tag.name
-                        };
+            var objToSave = {};
+
+            for (var tag of self.tagList) {
+                objToSave["tag_" + tag.id] = {
+                    name: tag.name
+                };
+            }
+
+            if (typeof browser !== 'undefined') {
+                browser.storage.sync.set(objToSave).then(resolve, reject);
+            } else {
+                chrome.storage.sync.set(objToSave, () => {
+                    if (chrome && chrome.runtime.error) {
+                        reject(chrome.runtime.error);
+                        return;
                     }
-                }
-
-                var objToSave = {};
-
-                for (var tagId in tags) {
-                    var _tag = tags[tagId];
-                    objToSave["tag_" + tagId] = tag;
-                }
-
-                if (typeof browser !== 'undefined') {
-                    browser.storage.sync.set(objToSave).then(resolve, reject);
-                } else {
-                    chrome.storage.sync.set(objToSave, () => {
-                        if (chrome && chrome.runtime.error) {
-                            reject(chrome.runtime.error);
-                            return;
-                        }
-                        resolve();
-                    });
-                }
-            });
+                    resolve();
+                });
+            }
         });
     }
 

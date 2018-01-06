@@ -8,37 +8,54 @@
 	align-items: stretch;
 	align-content: center;
 }
-.createTagForm {
-	/*height: 5vh;*/
-	width: 100%;
 
+.tagsComponent[visible="false"] {
+	display: none;
+}
+
+.openTagsButton {
+	display: none;
+	padding: 10px 5px;
+}
+
+.openTagsButton[visible="true"] {
+	display: block;
+}
+
+.openTagsButton button {
+	padding: 0;
+}
+
+.createTagForm {
 	display: flex;
 	flex-direction: row;
 	flex-wrap: nowrap;
 	justify-content: space-around;
 	align-items: center;
 	align-content: center;
-
-	padding: 10px;
+	padding: 10px 5px;
 }
 .createTagForm > * {
 }
 .createTagForm > input {
 	/*flex-grow: 1;*/
 	/*width: 50%;*/
-	flex-grow: 1;
-	min-width: 50%;
+	/*flex-grow: 1;*/
+	/*min-width: 50%;*/
 	/*margin-right: 5px;*/
+	min-width: 75px;
 }
 .createTagForm > button {
+	padding: 0 !important;
+	margin-left: 10px;
 	/*width: 25%;*/
-	height: 100%;
+	/*height: 100%;*/
 	/*margin: 0;*/
 	/*border: 1px solid #aeaeae;*/
-	white-space: nowrap;
+	/*white-space: nowrap;*/
 }
 .tags {
-	overflow-y: scroll;
+	overflow-y: auto;
 	flex-grow: 1;
 	/*height: 95vh;*/
 }

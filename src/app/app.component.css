@@ -1,35 +1,57 @@
+#main {
+	position: fixed;
+	left: 0;
+	top: 0;
+	width: 100%;
+	height: 100vh;
+
+	display: flex;
+	flex-direction: row;
+	flex-wrap: nowrap;
+	justify-content: space-between;
+	align-items: center;
+	align-content: center;
+}
+
 #leftColumn,
 #contentColumn, 
 #rightColumn {
-	position: fixed;
-	top: 0;
-	height: 100vh;
+	height: 100%;
+}
+
+#leftColumn,
+#rightColumn {
+	max-width: 20%;
+	overflow-y: auto;
 }
 
 #leftColumn {
-	left: 0;
-	width: 20%;
-}
-#contentColumn {
-	left: 20%;
-	width: 60%;
-	border-left: 1px solid #aeaeae;
-	border-right: 1px solid #aeaeae;
-	overflow-y: auto;
-	height: 100vh;
-}
-#rightColumn {
-	left: 80%;
-	width: 20%;
+	direction: rtl;
 }
 
 #leftColumn > * {
-	height: 100%;
+	direction: ltr;
+}
+
+#contentColumn {
+	flex-grow: 1;
+
+	/*border-left: 1px solid #aeaeae;
+	border-right: 1px solid #aeaeae;*/
+	overflow: auto;
+	padding: 10px;
+	box-sizing: border-box;
+}
+#rightColumn {
+	
+}
+
+#leftColumn > * {
 }
 
 #messageBox {
 	position: fixed;
-	left: 25%;
+	left: 0;
 	bottom: 0;
-	right: 25%;
+	right: 0;
 }

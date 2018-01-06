@@ -1,4 +1,4 @@
-<div class="tagDetail blocksFrame" *ngIf="tag">
+<div class="tagDetail" *ngIf="tag">
 	<div class="header">
 		<h3><input type="text" class="name" [(ngModel)]="tag.name" (keyup)="nameChanged()"></h3>
 		<!-- <h3>{{ tag.name }}</h3> -->
@@ -45,7 +45,8 @@
 			</div>
 		</div>
 	</div>
+	
 </div>
-<div class="tagDetail blocksFrame" *ngIf="!tag">
+<div class="tagDetail" *ngIf="!tag">
 	loading...
 </div>
