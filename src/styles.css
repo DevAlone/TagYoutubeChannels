@@ -8,13 +8,16 @@ html, body {
 	/*background: red;*/
 }
 
+p, a {
+	overflow-wrap: break-word;
+	word-wrap: break-word;
+	word-break: break-word;
+}
+
 p {
 	font-size: 15px;
 	padding: 0;
 	margin: 0;
-	overflow-wrap: break-word;
-	word-wrap: break-word;
-	word-break: break-word;
 }
 
 h3 {
@@ -31,9 +34,7 @@ button::-moz-focus-inner {
 
 a {
 	transition: color 0.25s;
-	overflow-wrap: break-word;
-	word-wrap: break-word;
-	word-break: break-word;
+	outline: none;
 }
 
 .tagFrame,

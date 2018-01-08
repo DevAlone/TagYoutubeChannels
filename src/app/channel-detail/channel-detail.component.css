@@ -2,17 +2,6 @@
 	
 }
 
-.youtubeChannelFrame {
-	margin: 10px;
-	box-sizing: border-box;
-}
-
-.youtubeChannelFrame iframe {
-	display: block;
-	min-height: 2000px;
-    width: 100%;
-}
-
 .header {
 	display: flex;
 	flex-direction: row;
@@ -93,4 +82,5 @@
 .tags {
 	width: 100%;
 	box-sizing: border-box;
+	margin-bottom: 10px;
 }

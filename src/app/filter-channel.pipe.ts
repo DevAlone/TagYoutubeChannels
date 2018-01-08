@@ -55,7 +55,7 @@ export class FilterChannelPipe implements PipeTransform {
                     if (filterObject._tags && filterObject._tags.length) {
                         let channelTags = new Set<string>();
                             for (var tag of Array.from(channel.tags.values()))
-                                channelTags.add(tag.name);
+                                channelTags.add(tag.name.toLowerCase());
 
                         if (filterObject.tagsStrictMode) {
                             for (var tagName of filterObject._tags) {

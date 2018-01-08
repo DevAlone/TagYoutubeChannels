@@ -4,4 +4,10 @@ Choose channel from this list
 <--
 or tag from this list -->
 	</pre>
+	<button (click)="updateChannelsFromYouTube()" [hidden]="isUpdating">
+		Update from YouTube
+	</button>
+	<div [hidden]="!isUpdating">
+		Updating...
+	</div>
 </div>

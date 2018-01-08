@@ -10,30 +10,29 @@ browser.browserAction.onClicked.addListener(openMainPage);
 
 
 function addFramePermissions(e) {
-	console.log("Loading fucking url: " + e.url);
-	// console.log('fucking headers');
-	// console.log(e);
+	// console.log("Loading fucking url: " + e.url);
 
-	var allowedHeaders = [];
+	var xFrameOptionsFound = false;
 
 	for (var header of e.responseHeaders) {
-		if (header.name.toLowerCase() !== "x-frame-options") {
-			allowedHeaders.push(header);
-		} else {
-			// console.log('x-frame-options found!!!');
+		if (header.name.toLowerCase() === 'x-frame-options') {
+			header.value = 'ALLOW-FROM ' + browser.extension.getURL('');
+			xFrameOptionsFound = true;
+			break;
 		}
 	}
 
-	e.responseHeaders = allowedHeaders;
-	// e.responseHeaders = [];
-
-	// console.log(e);
+	if (!xFrameOptionsFound) {
+		e.responseHeaders.push({
+			name: 'x-frame-options',
+			value: 'ALLOW-FROM ' + browser.extension.getURL('')
+		});
+	}
 
 	return { responseHeaders: e.responseHeaders };
 }
 
 
-// browser.webRequest.onHeadersReceived.addListener(
 browser.webRequest.onHeadersReceived.addListener(	
 	addFramePermissions,
 	{

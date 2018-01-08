@@ -22,6 +22,13 @@
 	border-bottom: 1px solid #aeaeae;
 }
 
+.header > h3 {
+	flex-grow: 1;
+}
+.header > h3 > input {
+	width: 100%;
+}
+
 .deleteTagButton {
 	border: none;
 	background: none;
@@ -70,6 +77,10 @@
 	text-align: center;
 }
 
+.channel .title > * {
+	vertical-align: middle;
+}
+
 .channel .title a {
 	text-decoration: none;
 	color: inherit;
@@ -78,14 +89,6 @@
 .channel .title a:hover {
 	color: #00f;
 }
-
-.channel .title .watchOnYoutubeButton {
-	margin-left: 5px;
-}
-.channel .title .watchOnYoutubeButton img {
-	vertical-align: middle;
-}
-
 
 .channel .note,
 .channel .deleteButton,

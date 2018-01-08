@@ -1,12 +1,5 @@
 .tagsComponent {
-	height: 100vh;
-
-	display: flex;
-	flex-direction: column;
-	flex-wrap: nowrap;
-	justify-content: flex-start;
-	align-items: stretch;
-	align-content: center;
+	height: 100%;
 }
 
 .tagsComponent[visible="false"] {
@@ -38,39 +31,28 @@
 .createTagForm > * {
 }
 .createTagForm > input {
-	/*flex-grow: 1;*/
-	/*width: 50%;*/
-	/*flex-grow: 1;*/
-	/*min-width: 50%;*/
-	/*margin-right: 5px;*/
 	min-width: 75px;
 }
 .createTagForm > button {
 	padding: 0 !important;
 	margin-left: 10px;
-	/*width: 25%;*/
-	/*height: 100%;*/
-	/*margin: 0;*/
-	/*border: 1px solid #aeaeae;*/
-	/*white-space: nowrap;*/
 }
 .tags {
-	overflow-y: auto;
-	flex-grow: 1;
-	/*height: 95vh;*/
+
 }
 
 .tag {
 	min-height: 25px;
-	display: flex;
+	display: block;
+/*	display: flex;
 	flex-direction: row;
-	flex-wrap: nowrap;
+	flex-wrap: wrap;
 	justify-content: flex-start;
 	align-items: center;
-	align-content: center;
+	align-content: center;*/
+
 	cursor: pointer;
 	padding: 10px;
-
 	border-bottom: 1px solid #ddd;
 	text-decoration: none;
 	color: inherit;

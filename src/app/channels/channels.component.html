@@ -52,7 +52,8 @@
 			  		type="text" 
 			  		name="tagsSearchString" 
 			  		[(ngModel)]="filter.tagsSearchString"
-			  		placeholder="with tags(comma separated)">
+			  		placeholder="with tags(comma separated, - is for exclude)"
+			  		title="with tags(comma separated, - is for exclude)">
 			  	<input type="checkbox" name="tagsStrictMode"
 			  		[(ngModel)]="filter.tagsStrictMode"
 			  		title="strict mode(if set, you cannot search by part of tag)">

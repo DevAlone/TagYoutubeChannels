@@ -4,11 +4,11 @@ declare var chrome: any;
 
 
 export class Channel {
-	id: string;
-	title: string;
-	iconUrl: string;
-	newVideosCount: number;
-	inSubscriptions: boolean;
+	id: string = "";
+	title: string = "";
+	iconUrl: string = "";
+	newVideosCount: number = 0;
+	inSubscriptions: boolean = false;
 	_note: string;
 	tags: Set<Tag> = new Set<Tag>();
 

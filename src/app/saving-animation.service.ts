@@ -7,27 +7,18 @@ export class SavingAnimationService {
 	@Output()
 	runningChanged = new EventEmitter<boolean>();
 
-	images: string[] = [
-		"1.gif",
-		"2.gif",
-		"3.gif",
-		"4.gif",
-		"5.gif",
-		"6.gif",
-		"7.gif",
-		"8.gif",
-		"9.gif",
-		"10.gif",
-		"11.gif",
-		"12.gif",
-		"13.gif",
-		"14.gif",
-		"15.gif",
-		"16.gif",
-	];
+	private IMAGES_COUNT: number = 20;
+	images: string[] = [];
 
 	currentImage: string = "";
 	counter: number = 0;
+
+	constructor(private messageService: MessageService) {
+		for (var i = 0; i < this.IMAGES_COUNT; ++i) 
+			this.images.push((i + 1) + '.gif');
+		
+		this.changeImage();
+	}
 
 	get isRunning(): boolean {
 		return this.counter > 0;
@@ -54,14 +45,6 @@ export class SavingAnimationService {
 		// if (!this.counter)
 		// 	this.messageService.addMessage("saved succesfully");
 	}
-
-	constructor(private messageService: MessageService) {
-		this.changeImage();
-		// setInterval(() => {
-		// 	this.changeImage();
-		// }, 3000);
-	}
-
 
 	getImagePath(): string {
 		return this.currentImage;

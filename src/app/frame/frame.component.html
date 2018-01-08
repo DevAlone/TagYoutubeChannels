@@ -1,0 +1,6 @@
+<div class="wrapper" *ngIf="frameIsOpened">
+	<iframe id="videoFrame" [src]="getFrameUrl()">
+		Your browser doesn't support iframes
+	</iframe>
+	<button class="closeButton" (click)="close()" title="Close">X</button>
+</div>

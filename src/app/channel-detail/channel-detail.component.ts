@@ -11,8 +11,12 @@ import { DomSanitizer } from '@angular/platform-browser';
 import { SavingAnimationService } from '../saving-animation.service';
 import { LazyWatcherService } from '../lazy-watcher.service';
 import { LazyWatcher } from '../lazy-watcher';
+import { Http } from '@angular/http';
+import { FrameService } from '../frame.service';
 
 declare var videoFrame: any;
+declare var videoFrame: any;
+declare var escape: Function;
 
 
 @Component({
@@ -26,7 +30,6 @@ export class ChannelDetailComponent implements OnInit {
 	private noteWatcher: LazyWatcher;
 
 	constructor(
-		public sanitizer: DomSanitizer,
 		private route: ActivatedRoute,
     	private channelService: ChannelService,
     	private location: Location,
@@ -34,7 +37,9 @@ export class ChannelDetailComponent implements OnInit {
     	private messageService: MessageService,
     	private channelTagService: ChannelTagRelationService,
     	private savingAnimationService: SavingAnimationService,
-    	private lazyWatcherService: LazyWatcherService
+    	private lazyWatcherService: LazyWatcherService,
+    	private http: Http,
+    	private frameService: FrameService
 	) { 
 		var self = this;
 		this.noteWatcher = this.lazyWatcherService.getWatcher(() => {
@@ -90,22 +95,9 @@ export class ChannelDetailComponent implements OnInit {
 		this.channelTagService.deleteTagFromChannel(this.channel, tag);
 	}
 
-	// userIsTyping: boolean = false;
-	// noteIsChanged: boolean = false;
-
 	noteChanged(): void {
 		this.noteWatcher.setChanging();
-		// this.noteIsChanged = true;
-		// this.userIsTyping = true;
 	}
-
-	// _checkNote(): void {
-	// 	if (this.noteIsChanged && !this.userIsTyping) {
-	// 		this.noteIsChanged = false;
-	// 		this.save();
-	// 	}
-	// 	this.userIsTyping = false;
-	// }
 
 	clearTags(): void {
 		if(!confirm("Are you sure? It will remove all tags from channel \"" + this.channel.title + "\"")) 
@@ -125,16 +117,8 @@ export class ChannelDetailComponent implements OnInit {
 			self.savingAnimationService.stopSaving();
 		});
 	}
-	private channelUrl: any = undefined;
-	// private channelUrl = this.sanitizer.bypassSecurityTrustResourceUrl(
-	// 	this.channel.url
-	// );
 
-	getChannelUrl(): any {
-		if (this.channel && !this.channelUrl)
-			this.channelUrl = this.sanitizer.bypassSecurityTrustResourceUrl(
-				this.channel.url
-			);
-		return this.channelUrl;
+	showYoutubeChannel(): void {
+		this.frameService.open(this.channel.url);
 	}
 }

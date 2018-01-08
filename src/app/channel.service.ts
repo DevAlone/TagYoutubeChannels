@@ -25,6 +25,34 @@ export class ChannelService {
         this.loadFromStorage().then(() => {}, error => console.log("ERROR: " + error) );
     }
 
+    addOrUpdateChannels(channels: Channel[]): Promise<void> {
+        var self = this;
+        return new Promise<void>((resolve, reject) => {
+            for (var channel of self.channelList)
+                channel.inSubscriptions = false;
+
+            for (var newChannel of channels) {
+                if (!newChannel.id || !newChannel.title) {
+                    continue;
+                }
+
+                var channel = self.channelList.find(_channel => _channel.id === newChannel.id);
+                if (!channel) {
+                    channel = newChannel;
+                    self.channelList.push(channel);
+                } else {
+                    channel.title = newChannel.title;
+                    if (newChannel.iconUrl)
+                        channel.iconUrl = newChannel.iconUrl;
+                    channel.newVideosCount = newChannel.newVideosCount;
+                    channel.inSubscriptions = newChannel.inSubscriptions;
+                }
+            }
+
+            self.saveToStorage().then(resolve, reject);
+        });
+    }
+
     getChannels(): Channel[] {
         return this.channelList;
     }
@@ -62,14 +90,20 @@ export class ChannelService {
         return new Promise<void>((resolve, reject) => {
             self.getChannelsFromStorage().then((channels) => {
                 for (var channel of self.channelList) {
-                    if (channels[channel.id]) {
-                        channels[channel.id].note = channel.note;
-                        var tags = [];
-                        for (var tag of Array.from(channel.tags.values()))
-                            tags.push(tag.id);
+                    if (!channels[channel.id]) 
+                        channels[channel.id] = {}
+                    
+                    
+                    channels[channel.id].title = channel.title;
+                    channels[channel.id].iconUrl = channel.iconUrl;
+                    channels[channel.id].newVideosCount = channel.newVideosCount;
+                    channels[channel.id].inSubscriptions = channel.inSubscriptions;
+                    channels[channel.id].note = channel.note;
+                    var tags = [];
+                    for (var tag of Array.from(channel.tags.values()))
+                        tags.push(tag.id);
 
-                        channels[channel.id].tags = tags;
-                    }
+                    channels[channel.id].tags = tags;
                 }
 
                 var objToSave = {};
