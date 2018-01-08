@@ -24,15 +24,6 @@
         "16": "assets/icons/main.ico"
     },
 
-    // "content_scripts": [
-    //     {
-    //         "matches": ["*://*.youtube.com/*"],
-    //         "js": [
-    //             // "assets/js/parser.js"
-    //         ]
-    //     }
-    // ],
-    
     "background": {
         "scripts": ["assets/js/background.js"]
     },

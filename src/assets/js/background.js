@@ -22,12 +22,12 @@ function addFramePermissions(e) {
 		}
 	}
 
-	if (!xFrameOptionsFound) {
+	/*if (!xFrameOptionsFound) {
 		e.responseHeaders.push({
 			name: 'x-frame-options',
-			value: 'ALLOW-FROM ' + browser.extension.getURL('')
+			value: 'SAMEORIGIN ALLOW-FROM ' + browser.extension.getURL('')
 		});
-	}
+	}*/
 
 	return { responseHeaders: e.responseHeaders };
 }
