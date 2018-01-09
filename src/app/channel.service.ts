@@ -117,12 +117,12 @@ export class ChannelService {
             for (var channel of self.channelList) {
                 objToDelete.push('channel_' + channel.id);
 
-                localObjToSave['c_' + channel.id] = {
+                localObjToSave['c_' + channel.id] = LZString.compressToUTF16(JSON.stringify({
                     title: channel.title,
                     iconUrl: channel.iconUrl,
                     newVideosCount: channel.newVideosCount,
                     inSubscriptions: channel.inSubscriptions,
-                }
+                }));
 
                 var objStr = "";
 
@@ -213,7 +213,14 @@ export class ChannelService {
                 }
 
                 for (var channelId in channels.localChannels) {
-                    var channel = channels.localChannels[channelId];
+                    var channel: any;
+                    var storageData = channels.localChannels[channelId];
+
+                    if (typeof storageData === 'string') {
+                        channel = JSON.parse(LZString.decompressFromUTF16(storageData));
+                    } else {
+                        channel = storageData;
+                    }
 
                     channelsFromStorage[channelId].title = channel.title;
                     channelsFromStorage[channelId].iconUrl = channel.iconUrl;
