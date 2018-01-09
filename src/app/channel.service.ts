@@ -5,9 +5,9 @@ import { Channel } from './channel';
 import { Tag } from './tag';
 import { TagService } from './tag.service';
 import { SavingAnimationService } from './saving-animation.service';
+import { StorageService } from './storage.service';
 
-declare var Arrays: any;
-
+declare var LZString: any;
 declare var browser: any;
 declare var chrome: any;
 
@@ -20,7 +20,8 @@ export class ChannelService {
 
     constructor(
         private tagService: TagService,
-        private savingAnimationService: SavingAnimationService
+        private savingAnimationService: SavingAnimationService,
+        private storageService: StorageService
     ) { 
         this.loadFromStorage().then(() => {}, error => console.log("ERROR: " + error) );
     }
@@ -28,6 +29,8 @@ export class ChannelService {
     addOrUpdateChannels(channels: Channel[]): Promise<void> {
         var self = this;
         return new Promise<void>((resolve, reject) => {
+            self.savingAnimationService.startSaving();
+
             for (var channel of self.channelList)
                 channel.inSubscriptions = false;
 
@@ -49,7 +52,16 @@ export class ChannelService {
                 }
             }
 
-            self.saveToStorage().then(resolve, reject);
+            function processResult(error) {
+                if (error) {
+                    reject(error);
+                    return;
+                }
+                self.savingAnimationService.stopSaving();
+                resolve();
+            }
+
+            self.saveToStorage().then(processResult, processResult);
         });
     }
 
@@ -73,67 +85,65 @@ export class ChannelService {
     saveChannel(channel: Channel): Promise<void> {
         var self = this;
         return new Promise<void>((resolve, reject) => {
-            self.saveToStorage().then(resolve, reject);
+            // self.saveToStorage().then(resolve, reject);
+            self.saveChannels(self.channelList).then(resolve, reject);
         });
     }
 
     saveChannels(channels: Channel[]): Promise<void> {
         var self = this;
         return new Promise<void>((resolve, reject) => {
-            self.saveToStorage().then(resolve, reject);
+            self.savingAnimationService.startSaving();
+            function processResult(error) {
+                if (error) {
+                    reject(error);
+                    return;
+                }
+                self.savingAnimationService.stopSaving();
+                resolve();
+            }
+            self.saveToStorage().then(processResult, processResult);
         });
     }
 
     saveToStorage(): Promise<void> {
         var self = this;
-        self.savingAnimationService.startSaving();
+
         return new Promise<void>((resolve, reject) => {
-            self.getChannelsFromStorage().then((channels) => {
-                for (var channel of self.channelList) {
-                    if (!channels[channel.id]) 
-                        channels[channel.id] = {}
-                    
-                    
-                    channels[channel.id].title = channel.title;
-                    channels[channel.id].iconUrl = channel.iconUrl;
-                    channels[channel.id].newVideosCount = channel.newVideosCount;
-                    channels[channel.id].inSubscriptions = channel.inSubscriptions;
-                    channels[channel.id].note = channel.note;
-                    var tags = [];
-                    for (var tag of Array.from(channel.tags.values()))
-                        tags.push(tag.id);
+            var syncObjToSave = {};
+            var localObjToSave = {};
+            var objToDelete = [];
 
-                    channels[channel.id].tags = tags;
+            for (var channel of self.channelList) {
+                objToDelete.push('channel_' + channel.id);
+
+                localObjToSave['c_' + channel.id] = {
+                    title: channel.title,
+                    iconUrl: channel.iconUrl,
+                    newVideosCount: channel.newVideosCount,
+                    inSubscriptions: channel.inSubscriptions,
                 }
 
-                var objToSave = {};
+                var objStr = "";
 
-                for (var channelId in channels) {
-                    var _channel = channels[channelId];
-                    objToSave["channel_" + channelId] = _channel;
+                objStr += channel.note.replace('\\', '\\\\') + '\\';
+
+                for (var tag of Array.from(channel.tags.values())) {
+                    objStr += tag.id + ',';
                 }
+                if (channel.tags.size > 0)
+                    objStr = objStr.substr(0, objStr.length - 1);
 
-                function processResult(error?:any) {
-                    self.savingAnimationService.stopSaving();
-                    if (error) {
-                        reject(error);
-                    } else {
+                syncObjToSave['cs_' + channel.id] = LZString.compressToUTF16(objStr);
+            }
+
+            self.storageService.setLocal(localObjToSave).then(() => {
+                self.storageService.setSync(syncObjToSave).then(() => {
+                    self.storageService.removeSync(objToDelete).then(() => {
                         resolve();
-                    }
-                }
-
-                if (typeof browser !== 'undefined') {
-                    browser.storage.sync.set(objToSave).then(processResult, processResult);
-                } else {
-                    chrome.storage.sync.set(objToSave, () => {
-                        if (chrome && chrome.runtime.error) {
-                            processResult(chrome.runtime.error);
-                            return;
-                        }
-                        processResult();
-                    });
-                }
-            });
+                    }, reject);
+                }, reject);
+            }, reject);
         });
     }
 
@@ -143,29 +153,77 @@ export class ChannelService {
         return new Promise(function (resolve, reject) {
             self.getChannelsFromStorage().then((channels) => {
                 self.channelList.splice(0, self.channelList.length);
-                for (var channelId in channels) {
-                    var channel = channels[channelId];
+
+                var channelsFromStorage = {};
+
+                for (var channelId in channels.syncChannels) {
+                    var channel = channels.syncChannels[channelId];
 
                     let newChannel = new Channel({
-                        id: channelId,
-                        title: channel.title,
-                        iconUrl: channel.iconUrl || "",
-                        newVideosCount: channel.newVideosCount,
-                        inSubscriptions: channel.inSubscriptions,
-                        note: channel.note || ""
+                        id: channelId
                     });
 
-                    self.channelList.push(newChannel);
-                    if (channel.tags) {
-                        for (var tagId of channel.tags) {
-                            self.tagService.getTagById(tagId).then(tag => {
-                                if (tag) {
-                                    newChannel.tags.add(tag);
-                                    tag.channels.add(newChannel);
-                                }
-                            });
+                    if (typeof channel === 'object') {
+                        newChannel.title = channel.title;
+                        newChannel.iconUrl = channel.iconUrl || "";
+                        newChannel.newVideosCount = channel.newVideosCount;
+                        newChannel.inSubscriptions = channel.inSubscriptions;
+                        newChannel.note = channel.note || "";
+                        if (channel.tags) {
+                            for (var tagId of channel.tags) {
+                                self.tagService.getTagById(tagId).then(tag => {
+                                    if (tag) {
+                                        newChannel.tags.add(tag);
+                                        tag.channels.add(newChannel);
+                                    }
+                                });
+                            }
                         }
+                    } else if (typeof channel === 'string') {
+                        var data: string = LZString.decompressFromUTF16(channel);
+
+                        var indexOfDelimiter = data.lastIndexOf('\\');
+                        var firstPart = data.substring(0, indexOfDelimiter);
+                        var secondPart = data.substring(indexOfDelimiter + 1);
+
+                        newChannel.note = firstPart.replace('\\\\', '\\');
+                        var tags = secondPart.split(',');
+
+                        if (tags) {
+                            for (var strTagId of tags) {
+                                var numberTagId: number = parseInt(strTagId);
+                                if (!isNaN(numberTagId)) {
+                                    self.tagService.getTagById(numberTagId).then(tag => {
+                                        if (tag) {
+                                            newChannel.tags.add(tag);
+                                            tag.channels.add(newChannel);
+                                        }
+                                    });
+                                }
+                            }
+                        }
+
+                        newChannel.title = "UNDEFINED";
+                        newChannel.iconUrl = "";
+                        newChannel.newVideosCount = 0;
+                        newChannel.inSubscriptions = false;
                     }
+
+                    channelsFromStorage[channelId] = newChannel;    
+                }
+
+                for (var channelId in channels.localChannels) {
+                    var channel = channels.localChannels[channelId];
+
+                    channelsFromStorage[channelId].title = channel.title;
+                    channelsFromStorage[channelId].iconUrl = channel.iconUrl;
+                    channelsFromStorage[channelId].newVideosCount = channel.newVideosCount;
+                    channelsFromStorage[channelId].inSubscriptions = channel.inSubscriptions;
+                }
+
+                for (var channelId in channelsFromStorage) {
+                    var newChannel = channelsFromStorage[channelId];
+                    self.channelList.push(newChannel);
                 }
 
                 self.isInitialized = true;
@@ -177,30 +235,30 @@ export class ChannelService {
     getChannelsFromStorage(): Promise<any> {
         var self = this
         return new Promise((resolve, reject) => {
-            var channels = {};
+            var channels = {
+                syncChannels: {},
+                localChannels: {},
+            };
             function processResult(storage) {
                 for (var key in storage) {
                     if (key.startsWith("channel_"))
-                        channels[key.substr(8)] = storage[key];
+                        channels.syncChannels[key.substr(8)] = storage[key];
+                    else if (key.startsWith("cs_"))
+                        channels.syncChannels[key.substr(3)] = storage[key];
                 }
-                resolve(channels);
+
+                self.storageService.getLocal(null).then((localStorage) => {
+                    for (var key in localStorage) {
+                        if (key.startsWith("c_"))
+                            channels.localChannels[key.substr(2)] = localStorage[key];
+                    }   
+                    resolve(channels);
+                }, reject);
             }
 
-            if (typeof browser !== 'undefined') {
-                browser.storage.sync.get(null).then(
-                    storage => processResult(storage), 
-                    error => reject(error)
-                );
-            } else {
-                chrome.storage.sync.get(null, (storage) => {
-                    if (chrome && chrome.runtime.error) {
-                        reject(chrome.runtime.error);
-                        return;
-                    }
-
-                    processResult(storage);
-                });
-            }
+            self.storageService.getSync(null).then(
+                processResult, reject
+            );
         });
     }
 }

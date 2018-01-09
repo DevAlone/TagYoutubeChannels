@@ -24,7 +24,9 @@ import { SavingAnimationService } from './saving-animation.service';
 import { LazyWatcherService } from './lazy-watcher.service';
 import { ParserService } from './parser.service';
 import { FrameService } from './frame.service';
+import { StorageService } from './storage.service';
 import { WatchOnYoutubeLinkComponent } from './watch-on-youtube-link/watch-on-youtube-link.component';
+import { DebugPageComponent } from './debug-page/debug-page.component';
 
 
 @NgModule({
@@ -41,6 +43,7 @@ import { WatchOnYoutubeLinkComponent } from './watch-on-youtube-link/watch-on-yo
         SavingAnimationComponent,
         FrameComponent,
         WatchOnYoutubeLinkComponent,
+        DebugPageComponent,
     ],
     imports: [
         BrowserModule,
@@ -56,7 +59,8 @@ import { WatchOnYoutubeLinkComponent } from './watch-on-youtube-link/watch-on-yo
         SavingAnimationService, 
         LazyWatcherService ,
         ParserService,
-        FrameService
+        FrameService,
+        StorageService
     ],
     bootstrap: [AppComponent]
 })

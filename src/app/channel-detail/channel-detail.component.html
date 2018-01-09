@@ -15,7 +15,8 @@
 		<textarea class="noteFrame" 
 			placeholder="Your note about channel"
 			[(ngModel)]="channel.note" 
-			(input)="noteChanged()">
+			(input)="noteChanged()"
+			[attr.maxlength]="channel.noteMaxLength">
 		</textarea>
 	</div>
 	<div class="tags" (drop)="dropTag($event)" (dragover)="$event.preventDefault();">

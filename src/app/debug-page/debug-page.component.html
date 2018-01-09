@@ -1,0 +1,16 @@
+<div>
+	<span>sync storage size: </span>
+	<span>{{ syncStorageSize }}</span>
+</div>
+<div>
+	<span>local storage size: </span>
+	<span>{{ localStorageSize }}</span>
+</div>
+<h1>sync storage</h1>
+<pre>
+	{{ syncStorage | json }}
+</pre>
+<h1>local storage</h1>
+<pre>
+	{{ localStorage | json }}
+</pre>

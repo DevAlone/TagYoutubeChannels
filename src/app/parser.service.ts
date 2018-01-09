@@ -3,6 +3,7 @@ import { Http } from '@angular/http';
 import { Parser } from './parser';
 import { Channel } from './channel';
 import { ChannelService } from './channel.service';
+import { StorageService } from './storage.service';
 
 
 @Injectable()
@@ -11,11 +12,13 @@ export class ParserService {
 
 	constructor(
 		private http: Http,
-		private channelService: ChannelService
+		private channelService: ChannelService,
+		private storageService: StorageService
 	) { }
 
 	public init(): void {
 		// this.update();
+		this.storageService.removeSync('myLastChannel');
 	}
 
 	public update(): Promise<void> {

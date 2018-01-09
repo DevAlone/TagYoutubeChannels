@@ -3,9 +3,7 @@ import { ChannelService } from '../channel.service';
 import { Channel } from '../channel';
 import { ChannelFilterObject } from '../channel-filter-object';
 import { Router, NavigationEnd } from '@angular/router';
-
-declare var browser: any;
-declare var chrome: any;
+import { StorageService } from '../storage.service';
 
 declare var checkboxes: any;
 
@@ -26,38 +24,18 @@ export class ChannelsComponent implements OnInit {
 
 	constructor(
 		private router: Router,
-		private channelService: ChannelService
+		private channelService: ChannelService,
+		private storageService: StorageService
 	) { 
 	}
 
 	ngOnInit() {
 		var self = this;
-		function processItem(item) {
-			if (chrome && chrome.runtime.error) {
-                console.log(chrome.runtime.error);
-                return;
-            }
 
-			if (item.channelFilterObject !== undefined) {
-				self.filter.searchString = item.channelFilterObject.searchString;
-				self.filter.inSubscriptions = item.channelFilterObject.inSubscriptions;
-				self.filter.hasNewVideos = item.channelFilterObject.hasNewVideos;
-				self.filter.isNoted = item.channelFilterObject.isNoted;
-				self.filter.isTagged = item.channelFilterObject.isTagged;
-				self.filter.isNotTagged = item.channelFilterObject.isNotTagged;
-				self.filter.tagsSearchString = item.channelFilterObject.tagsSearchString;
-				if (typeof item.channelFilterObject.tagsStrictMode !== 'undefined')
-					self.filter.tagsStrictMode = item.channelFilterObject.tagsStrictMode;
-			}
-			
-			self.saveChannelFilterToStorage();
-		}
-		if (typeof browser !== 'undefined') {
-			browser.storage.sync.get("channelFilterObject").then(processItem, error => console.log(error) );
-		} else {
-			chrome.storage.sync.get("channelFilterObject", processItem);
-		}
-		
+		self.storageService.removeSync("channelFilterObject").then(
+			() => console.log("OK"),
+			error => console.log(error)
+		);
 	}
 
 	saveChannelFilterToStorage(): void {
@@ -65,9 +43,6 @@ export class ChannelsComponent implements OnInit {
 		function processItem (error) {
 			if (error)
 				console.log(error);
-
-			if (chrome && chrome.runtime.error)
-				console.log(chrome.runtime.error);
 
 			setTimeout(()=>{self.saveChannelFilterToStorage()}, 1000);
 		}
@@ -83,15 +58,9 @@ export class ChannelsComponent implements OnInit {
 			tagsStrictMode: self.filter.tagsStrictMode,
 		};
 
-		if (typeof browser !== 'undefined') {
-			browser.storage.sync.set({
-				channelFilterObject: objectToSave
-			}).then(processItem, error => processItem(error) );
-		} else {
-			chrome.storage.sync.set({
-				channelFilterObject: objectToSave
-			}, processItem);
-		}
+		self.storageService.setLocal({
+			cfo_: objectToSave
+		}).then(processItem, processItem);
 	}
 
 	onDrag(event, channel): void {

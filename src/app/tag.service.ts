@@ -4,9 +4,13 @@ import 'rxjs/add/observable/fromPromise';
 import { of } from 'rxjs/observable/of';
 import { Tag } from './tag';
 import { SavingAnimationService } from './saving-animation.service';
+import { StorageService } from './storage.service';
+
+// import './js/lz-string.js';
 
 declare var browser: any;
 declare var chrome: any;
+declare var LZString: any;
 
 
 @Injectable()
@@ -15,7 +19,10 @@ export class TagService {
     private tagList: Tag[] = [];
     private isInitialized = false;
 
-    constructor(private savingAnimationService: SavingAnimationService) { 
+    constructor(
+        private savingAnimationService: SavingAnimationService,
+        private storageService: StorageService
+    ) { 
         this.loadFromStorage();
     }
 
@@ -90,18 +97,9 @@ export class TagService {
                     self.tagList.push(_tag);
             }
 
-            var tagStrId = 'tag_' + tag.id;
+            var tagStrId = 'ts_' + tag.id;
 
-            if (typeof browser !== 'undefined') {
-                browser.storage.sync.remove(tagStrId).then(resolve, reject);
-            } else {
-                chrome.storage.sync.remove(tagStrId, (storage) => {
-                    if (chrome && chrome.runtime.error)
-                        reject(chrome.runtime.error);
-                    else
-                        resolve();
-                });
-            }
+            self.storageService.removeSync(tagStrId).then(resolve, reject);
         });
     }
 
@@ -117,11 +115,18 @@ export class TagService {
                     if (isNaN(id))
                         continue;
 
-                    var tag = tags[id];
-                    self.tagList.push(new Tag({
+                    var tag: any = tags[id];
+                    var newTag = new Tag({
                         id: id,
-                        name: tag.name
-                    }));
+                    });
+                    if (typeof tag === 'string')
+                        newTag.name = tag;
+                    else if(typeof tag === 'object')
+                        newTag.name = tag.name;
+                    else
+                        newTag.name = "UNDEFINED";
+
+                    self.tagList.push(newTag);
                 }
                 self.isInitialized = true;
                 
@@ -135,11 +140,12 @@ export class TagService {
         self.savingAnimationService.startSaving();
         return new Promise<void>((resolve, reject) => {
             var objToSave = {};
+            var objToRemove = [];
 
             for (var tag of self.tagList) {
-                objToSave["tag_" + tag.id] = {
-                    name: tag.name
-                };
+                objToSave["ts_" + tag.id] = LZString.compressToUTF16(tag.name.toString());
+                
+                objToRemove.push("tag_" + tag.id);
             }
 
             function processResult(error?) {
@@ -149,18 +155,12 @@ export class TagService {
                 else
                     resolve();
             }
-
-            if (typeof browser !== 'undefined') {
-                browser.storage.sync.set(objToSave).then(processResult, processResult);
-            } else {
-                chrome.storage.sync.set(objToSave, () => {
-                    if (chrome && chrome.runtime.error) {
-                        processResult(chrome.runtime.error);
-                        return;
-                    }
-                    processResult();
-                });
-            }
+            
+            self.storageService.setSync(objToSave).then(() => {
+                // console.log('removing');
+                // console.log(objToRemove);
+                self.storageService.removeSync(objToRemove).then(processResult, processResult);
+            }, processResult);
         });
     }
 
@@ -174,26 +174,18 @@ export class TagService {
                         var id = parseInt(key.substr(4));
                         if (!isNaN(id))
                             tags[id] = storage[key];
+                    } else if (key.startsWith("ts_")) {
+                        var id = parseInt(key.substr(3));
+                        if (!isNaN(id))
+                            tags[id] = LZString.decompressFromUTF16(storage[key]);
                     }
                 }
                 resolve(tags);
             }
 
-            if (typeof browser !== 'undefined') {
-                browser.storage.sync.get(null).then(
-                    storage => processResult(storage), 
-                    error => reject(error)
-                );
-            } else {
-                chrome.storage.sync.get(null, (storage) => {
-                    if (chrome && chrome.runtime.error) {
-                        reject(chrome.runtime.error);
-                        return;
-                    }
-
-                    processResult(storage);
-                });
-            }
+            self.storageService.getSync(null).then(
+                processResult, reject
+            );
         });
     }
 }

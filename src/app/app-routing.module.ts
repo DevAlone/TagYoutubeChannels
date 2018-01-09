@@ -6,6 +6,8 @@ import { ChannelsComponent } from './channels/channels.component';
 import { ChannelDetailComponent } from './channel-detail/channel-detail.component';
 import { TagDetailComponent } from './tag-detail/tag-detail.component';
 import { StartPageComponent } from './start-page/start-page.component';
+import { DebugPageComponent } from './debug-page/debug-page.component';
+
 
 
 const routes: Routes = [
@@ -13,6 +15,7 @@ const routes: Routes = [
 	{ path: 'index', component: StartPageComponent },
 	{ path: 'channel/:id', component: ChannelDetailComponent },
 	{ path: 'tag/:id', component: TagDetailComponent },
+	{ path: 'debug', component: DebugPageComponent },
 ];
 
 @NgModule({

@@ -29,7 +29,8 @@
 							title="Your note about channel" 
 							placeholder="Your note about channel"
 							[(ngModel)]="channel.note" 
-							(input)="noteChanged(channel)">
+							(input)="noteChanged(channel)"
+							[attr.maxlength]="channel.noteMaxLength">
 						</textarea>
 					</div>
 					<button 

@@ -9,8 +9,12 @@ export class Channel {
 	iconUrl: string = "";
 	newVideosCount: number = 0;
 	inSubscriptions: boolean = false;
-	_note: string;
+	private _note: string;
 	tags: Set<Tag> = new Set<Tag>();
+
+	public get noteMaxLength(): number {
+		return 1024;
+	}
 
 	get note(): string {
 		if (!this._note)
@@ -19,10 +23,9 @@ export class Channel {
 		return this._note;
 	}
 
-	set note(value: string) {
-		this._note = value;
-		// if (typeof chrome !== 'undefined')
-		// 	this._note = this._note.substr(0, 4096);
+	set note(value: string) { 
+		this._note = value; 
+		this._note = this._note.substr(0, this.noteMaxLength);
 	}
 
 	public constructor(init?:Partial<Channel>) {

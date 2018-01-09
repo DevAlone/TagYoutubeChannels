@@ -48,7 +48,7 @@
 #rightColumn {
 	/*flex-grow: 1;*/
 	/*flex-grow: 10000;*/
-	min-width: 20%;
+	/*min-width: 20%;*/
 }
 
 #leftColumn > * {
