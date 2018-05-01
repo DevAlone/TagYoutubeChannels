@@ -7,7 +7,7 @@ export class SavingAnimationService {
 	@Output()
 	runningChanged = new EventEmitter<boolean>();
 
-	private IMAGES_COUNT: number = 20;
+	private IMAGES_COUNT: number = 19;
 	images: string[] = [];
 
 	currentImage: string = "";

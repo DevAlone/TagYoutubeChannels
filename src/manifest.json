@@ -1,7 +1,7 @@
 {
     "manifest_version": 2,
     "name": "TagYoutubeChannels",
-    "version": "1.0",
+    "version": "1.0.1",
     
     "applications": {
         "gecko": {
